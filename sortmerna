@@ -1,0 +1,20 @@
+sortmerna \
+--ref rRNA_databases/silva-bac-16s-id90.fasta \
+--ref rRNA_databases/silva-bac-23s-id98.fasta \
+--ref rRNA_databases/silva-arc-16s-id95.fasta \
+--ref rRNA_databases/silva-arc-23s-id98.fasta \
+--ref rRNA_databases/silva-euk-18s-id95.fasta \
+--ref rRNA_databases/silva-euk-28s-id98.fasta \
+--ref rRNA_databases/rfam-5s-database-id98.fasta \
+--ref rRNA_databases/rfam-5.8s-database-id98.fasta \
+--threads 10 \
+--reads ../../../josefina/rnaseq/trimmed_fastq/fastqgz/CR2-1_S27_L002_R1_001.trim.paired.fastq.gz \
+--reads ../../../josefina/rnaseq/trimmed_fastq/fastqgz/CR2-1_S27_L002_R2_001.trim.paired.fastq.gz \
+--num_alignments 1 \
+--aligned CR2-1_S27_rRNA \
+--other CR2-1_S27_non_rRNA \
+--out2 \
+--blast \
+--fastx \
+-v \
+--workdir CR2-1_S27
