@@ -1,0 +1,1732 @@
+#ahora ya tengo el input para cuffdiff
+
+#aca voy haciendo de a 2. son 36 en total. O sea todas las combinaciones de los 9 tratamientos
+
+#para cada uno poner las repeticiones en la misma linea separadas por comas
+
+
+
+
+#combinacion Cr1, B51
+
+mkdir star/cuffdiff-cr1-b51
+
+cd star/cuffdiff-cr1-b51
+
+
+
+cuffdiff -o ./ \
+-L Cr1,B51 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam
+
+#deje corriendo jueves 17 hs
+#termino al otro dia, no se a que hora
+
+#la salida fue
+Estimated Std Dev: 126.88
+> Map Properties:
+>       Normalized Map Mass: 14839887.51
+>       Raw Map Mass: 45723193.85
+>       Number of Multi-Reads: 39677527 (with 98644098 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 425.76
+>                  Estimated Std Dev: 148.79
+[17:09:30] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[20:51:04] Learning bias parameters.
+[21:55:33] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 421 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 421 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+#hacer un archivo ordenado por los p-value de menor a mayor
+sort -t$'\t' -g -k 13 cuffdiff-cr1-b51/gene_exp.diff > cuffdiff-cr1-b51/gene_exp_sorted.diff
+
+
+
+fijarme si le agrego o no este argumento
+
+–total-hits-norm
+
+With this option, Cufflinks counts all fragments, including those not compatible with any reference transcript, towards the number of mapped fragments used in the FPKM denominator. It is inactive by default.
+
+#############voy a hacer otra corrida exactamente igual a la anterior, pero agregando este argumento
+
+mkdir cuffdiff-cr1-b51-totalhits
+
+cd cuffdiff-cr1-b51-totalhits
+
+cuffdiff -o ./ \
+-L Cr1,B51 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam
+
+#deje corriendo domingo 12:20 pm
+#listo
+
+#hacer un archivo ordenado por los p-value de menor a mayor
+cd cuffdiff-cr1-b51-totalhits
+sort -t$'\t' -g -k 13 gene_exp.diff > gene_exp_sorted.diff
+
+
+
+
+#despues hacer una carpeta diferente por combinacion de tratamiento (36 en total)
+
+
+#a partir de aca los corro con el argumento –total-hits-norm
+
+
+
+
+#combinacion Cr1, Cr2
+
+mkdir cuffdiff-cr1-cr2
+
+cd cuffdiff-cr1-cr2
+
+
+cuffdiff -o ./ \
+-L Cr1,CR2 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam
+
+#deje corriendo domingo 13 hs
+#listo
+
+sort -t$'\t' -g -k 13 gene_exp.diff > gene_exp_sorted.diff
+
+
+#combinacion Cr1, B52
+
+mkdir cuffdiff-cr1-b52
+
+cd cuffdiff-cr1-b52
+
+cuffdiff -o ./ \
+-L Cr1,B52 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/B52-1_S24_L002_Aligned.out.sorted.bam,../mapped/B52-B1_S43_L003_Aligned.out.sorted.bam,../mapped/B52_S10_L001_Aligned.out.sorted.bam
+
+#deje corriendo domingo 13.30 hs
+#listo
+
+sort -t$'\t' -g -k 13 gene_exp.diff > gene_exp_sorted.diff
+
+
+
+#combinacion Cr1, Cr3
+
+mkdir cuffdiff-cr1-cr3
+
+cd cuffdiff-cr1-cr3
+
+cuffdiff -o ./ \
+-L Cr1,Cr3 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/CR3-B1_S28_L002_Aligned.out.sorted.bam,../mapped/CR3-B_S54_L003_Aligned.out.sorted.bam,../mapped/CR3_S16_L001_Aligned.out.sorted.bam
+
+deje corriendo domingo 13.30 hs
+#listo
+
+sort -t$'\t' -g -k 13 gene_exp.diff > gene_exp_sorted.diff
+
+
+#combinacion Cr1, B53
+
+mkdir cuffdiff-cr1-b53
+
+cd cuffdiff-cr1-b53
+
+
+cuffdiff -o ./ \
+-L Cr1,B53 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam,../mapped/B53_S44_L003_Aligned.out.sorted.bam
+
+#deje corriendo domingo 13.30 hs
+#listo
+
+sort -t$'\t' -g -k 13 gene_exp.diff > gene_exp_sorted.diff
+
+
+
+#combinacion Cr1, B54
+
+mkdir cuffdiff-cr1-b54
+
+cd cuffdiff-cr1-b54
+
+cuffdiff -o ./ \
+-L Cr1,B54 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/B54-2_S46_L003_Aligned.out.sorted.bam,../mapped/B54_S12_L001_Aligned.out.sorted.bam
+
+#deje corriendo domingo 13.40 hs
+#listo
+
+sort -t$'\t' -g -k 13 gene_exp.diff > gene_exp_sorted.diff
+
+
+#combinacion Cr1, CrT
+
+mkdir cuffdiff-cr1-crt
+
+cd cuffdiff-cr1-crt
+
+cuffdiff -o ./ \
+-L Cr1,CrT \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/CRT-1_S29_L002_Aligned.out.sorted.bam,../mapped/CRT-B1_S18_L001_Aligned.out.sorted.bam,../mapped/CRT-B_S17_L001_Aligned.out.sorted.bam
+
+#deje corriendo domingo 13.45 hs
+#listo
+
+sort -t$'\t' -g -k 13 gene_exp.diff > gene_exp_sorted.diff
+
+
+
+#combinacion Cr1, B5T
+
+mkdir cuffdiff-cr1-b5t
+
+cd cuffdiff-cr1-b5t
+
+cuffdiff -o ./ \
+-L Cr1,B5T \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR1-1_S50_L003_Aligned.out.sorted.bam,../mapped/CR1-B1_S14_L001_Aligned.out.sorted.bam,../mapped/CR1-B_S51_L003_Aligned.out.sorted.bam,../mapped/CR1_S49_L003_Aligned.out.sorted.bam \
+../mapped/B5T-1_S26_L002_Aligned.out.sorted.bam,../mapped/B5T-B_S48_L003_Aligned.out.sorted.bam,../mapped/B5T-C_S13_L001_Aligned.out.sorted.bam,../mapped/B5T_S47_L003_Aligned.out.sorted.bam
+
+#deje corriendo domingo 13.50 hs
+#listo
+
+sort -t$'\t' -g -k 13 gene_exp.diff > gene_exp_sorted.diff
+
+##########################     hasta aca van todas las combinaciones de Cr1
+
+
+
+
+
+
+###################################   van 8 screens de cuffdiff (ya terminaron esas 8)
+
+
+#   aca ampiezo las combinaciones de B51  (con todas excepto Cr1 que ya la hice, o sea que en total son 7)
+
+#######  EN TODAS ESTAS DEBERIA CHEQUEAR QUE HAYAN TERMINADO YA QUE EL SERVIDOR SE DESCONECTO
+
+
+#combinacion B51, Cr2
+
+mkdir cuffdiff-b51-cr2
+
+cd cuffdiff-b51-cr2
+
+cuffdiff -o ./ \
+-L B51,Cr2 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam
+
+#deje corriendo martes 12 pm
+#no termino
+
+
+#combinacion B51, B52
+
+mkdir cuffdiff-b51-b52
+
+cd cuffdiff-b51-b52
+
+cuffdiff -o ./ \
+-L B51,B52 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam \
+../mapped/B52-1_S24_L002_Aligned.out.sorted.bam,../mapped/B52-B1_S43_L003_Aligned.out.sorted.bam,../mapped/B52_S10_L001_Aligned.out.sorted.bam
+
+#deje corriendo martes 12 pm
+# no termino
+
+
+#combinacion B51, Cr3
+
+mkdir cuffdiff-b51-cr3
+
+cd cuffdiff-b51-cr3
+
+cuffdiff -o ./ \
+-L B51,Cr3 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam \
+../mapped/CR3-B1_S28_L002_Aligned.out.sorted.bam,../mapped/CR3-B_S54_L003_Aligned.out.sorted.bam,../mapped/CR3_S16_L001_Aligned.out.sorted.bam
+
+#deje corriendo martes 12.20 pm
+#no termino
+
+
+
+#combinacion B51, B53
+
+mkdir cuffdiff-b51-b53
+
+cd cuffdiff-b51-b53
+
+cuffdiff -o ./ \
+-L B51,B53 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam,../mapped/B53_S44_L003_Aligned.out.sorted.bam
+
+#deje corriendo martes 12.30 pm
+#no termino
+
+
+
+#combinacion B51, B54
+
+mkdir cuffdiff-b51-b54
+
+cd cuffdiff-b51-b54
+
+cuffdiff -o ./ \
+-L B51,B54 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam \
+../mapped/B54-2_S46_L003_Aligned.out.sorted.bam,../mapped/B54_S12_L001_Aligned.out.sorted.bam
+
+#deje corriendo martes 12.30 pm
+#no termino
+
+
+
+#combinacion B51, CrT
+
+mkdir cuffdiff-b51-crt
+
+cd cuffdiff-b51-crt
+
+
+cuffdiff -o ./ \
+-L B51,CrT \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam \
+../mapped/CRT-1_S29_L002_Aligned.out.sorted.bam,../mapped/CRT-B1_S18_L001_Aligned.out.sorted.bam,../mapped/CRT-B_S17_L001_Aligned.out.sorted.bam
+
+#deje corriendo martes 12.30 pm
+#parece que si termino
+
+
+
+#combinacion B51, B5T
+
+mkdir cuffdiff-b51-b5t
+
+cd cuffdiff-b51-b5t
+
+
+cuffdiff -o ./ \
+-L B51,B5T \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B51-1_S42_L003_Aligned.out.sorted.bam,../mapped/B51-B1_S23_L002_Aligned.out.sorted.bam,../mapped/B51-B_S9_L001_Aligned.out.sorted.bam,../mapped/B51_S8_L001_Aligned.out.sorted.bam \
+../mapped/B5T-1_S26_L002_Aligned.out.sorted.bam,../mapped/B5T-B_S48_L003_Aligned.out.sorted.bam,../mapped/B5T-C_S13_L001_Aligned.out.sorted.bam,../mapped/B5T_S47_L003_Aligned.out.sorted.bam
+
+#deje corriendo martes 12.30 pm
+#no termino
+
+
+
+##########################    7 screens mas de cuffdiff
+
+
+
+
+
+
+
+#   Ahora empiezo las de Cr2   (todas las combinaciones excepto las de Cr1 y B51 que ya las hice, o sea que son 6)
+
+
+
+#combinacion Cr2, B52
+
+mkdir cuffdiff-cr2-b52
+
+cd cuffdiff-cr2-b52
+
+
+cuffdiff -o ./ \
+-L Cr2,B52 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam \
+../mapped/B52-1_S24_L002_Aligned.out.sorted.bam,../mapped/B52-B1_S43_L003_Aligned.out.sorted.bam,../mapped/B52_S10_L001_Aligned.out.sorted.bam
+
+#deje corriendo jueves 10.50 am
+#termino viernes 00.30 hs
+
+>       Normalized Map Mass: 136642124.07
+>       Raw Map Mass: 147645580.49
+>       Number of Multi-Reads: 45013715 (with 106203325 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 303.87
+>                  Estimated Std Dev: 175.85
+[10:46:37] Calculating preliminary abundance estimates
+> Processing Locus DCARv2_Chr4:23189964-232067 [**********               ]  43%
+> Processed 32045 loci.                        [*************************] 100%
+[14:35:08] Learning bias parameters.
+[15:37:09] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 659 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 659 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+#combinacion Cr2, Cr3
+
+mkdir cuffdiff-cr2-cr3
+
+cd cuffdiff-cr2-cr3
+
+cuffdiff -o ./ \
+-L Cr2,cr3 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam \
+../mapped/CR3-B1_S28_L002_Aligned.out.sorted.bam,../mapped/CR3-B_S54_L003_Aligned.out.sorted.bam,../mapped/CR3_S16_L001_Aligned.out.sorted.bam
+
+#deje corriendo jueves 11 hs
+#termino viernes 00.30 hs
+
+>       Number of Multi-Reads: 11030416 (with 22482747 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+> Map Properties:
+>       Normalized Map Mass: 140984980.91
+>       Raw Map Mass: 166710229.69
+>       Number of Multi-Reads: 16614059 (with 32455129 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+[10:56:18] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[14:51:15] Learning bias parameters.
+[16:12:09] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 357 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 357 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+#combinacion Cr2, B53
+
+mkdir cuffdiff-cr2-b53
+
+cd cuffdiff-cr2-b53
+
+cuffdiff -o ./ \
+-L Cr2,B53 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam,../mapped/B53_S44_L003_Aligned.out.sorted.bam
+
+#deje corriendo jueves 11.15 hs
+
+
+
+#algo paso que se trabo, me parece que son muchos files
+
+#asi que lo voy a correr con un file menos, elimino uno de B53 porque igual no me interesa tanto esta comparacion de tratamientos
+
+cd cuffdiff-cr2-b53
+
+
+cuffdiff -o ./ \
+-L Cr2,B53 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam
+
+#deje corriendo viernes 12 pm
+
+>       Number of Multi-Reads: 26316683 (with 59856468 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 303.89
+>                  Estimated Std Dev: 171.45
+> Map Properties:
+>       Normalized Map Mass: 149070490.73
+>       Raw Map Mass: 144752013.64
+>       Number of Multi-Reads: 46638106 (with 110906330 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 304.71
+>                  Estimated Std Dev: 172.57
+[11:53:10] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[15:59:11] Learning bias parameters.
+[17:00:56] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 783 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 783 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+
+#combinacion Cr2, B54
+
+mkdir cuffdiff-cr2-b54
+
+cd cuffdiff-cr2-b54
+
+cuffdiff -o ./ \
+-L Cr2,B54 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam \
+../mapped/B54-2_S46_L003_Aligned.out.sorted.bam,../mapped/B54_S12_L001_Aligned.out.sorted.bam
+
+#deje corriendo jueves 22 hs
+
+>       Number of Multi-Reads: 24902411 (with 56935840 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 316.54
+>                  Estimated Std Dev: 179.14
+> Map Properties:
+>       Normalized Map Mass: 142485372.10
+>       Raw Map Mass: 143730048.11
+>       Number of Multi-Reads: 44902626 (with 105836675 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 312.17
+>                  Estimated Std Dev: 178.14
+[21:46:59] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[00:55:20] Learning bias parameters.
+[01:44:56] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 729 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 729 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+#combinacion Cr2, CrT
+
+mkdir cuffdiff-cr2-crt
+
+cd cuffdiff-cr2-crt
+
+
+cuffdiff -o ./ \
+-L Cr2,CrT \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam \
+../mapped/CRT-1_S29_L002_Aligned.out.sorted.bam,../mapped/CRT-B1_S18_L001_Aligned.out.sorted.bam,../mapped/CRT-B_S17_L001_Aligned.out.sorted.bam
+
+#deje corriendo viernes 00.45 hs
+
+>       Number of Multi-Reads: 14609938 (with 29777527 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+> Map Properties:
+>       Normalized Map Mass: 140521415.23
+>       Raw Map Mass: 129639596.26
+>       Number of Multi-Reads: 25131470 (with 56605493 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+[00:44:55] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[04:24:42] Learning bias parameters.
+[05:36:31] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 466 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 466 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+
+#combinacion Cr2, B5T
+
+mkdir cuffdiff-cr2-b5t
+
+cd cuffdiff-cr2-b5t
+
+
+cuffdiff -o ./ \
+-L Cr2,B5T \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR2-1_S27_L002_Aligned.out.sorted.bam,../mapped/CR2-B_S52_L003_Aligned.out.sorted.bam,../mapped/CR2-E_S53_L003_Aligned.out.sorted.bam,../mapped/CR2_S15_L001_Aligned.out.sorted.bam \
+../mapped/B5T-1_S26_L002_Aligned.out.sorted.bam,../mapped/B5T-B_S48_L003_Aligned.out.sorted.bam,../mapped/B5T-C_S13_L001_Aligned.out.sorted.bam,../mapped/B5T_S47_L003_Aligned.out.sorted.bam
+
+#deje corriendo viernes 00.50 hs
+
+>       Number of Multi-Reads: 59495130 (with 140151311 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 308.64
+>                  Estimated Std Dev: 170.30
+> Map Properties:
+>       Normalized Map Mass: 150125639.83
+>       Raw Map Mass: 97301265.25
+>       Number of Multi-Reads: 28231387 (with 65739221 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 295.15
+>                  Estimated Std Dev: 169.64
+[01:04:55] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[06:20:06] Learning bias parameters.
+[07:28:25] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 791 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 791 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+###############################################################
+
+
+
+
+
+# Ahora vienen las combinaciones de B52 (excepto cr1, b51, cr2) o sea que son 5 en total
+
+
+#combinacion B52, Cr3
+
+mkdir cuffdiff-b52-cr3
+
+cd cuffdiff-b52-cr3
+
+
+cuffdiff -o ./ \
+-L B52,Cr3 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B52-1_S24_L002_Aligned.out.sorted.bam,../mapped/B52-B1_S43_L003_Aligned.out.sorted.bam,../mapped/B52_S10_L001_Aligned.out.sorted.bam \
+../mapped/CR3-B1_S28_L002_Aligned.out.sorted.bam,../mapped/CR3-B_S54_L003_Aligned.out.sorted.bam,../mapped/CR3_S16_L001_Aligned.out.sorted.bam
+
+
+########   deje corriendo sabado 2 am
+
+>       Number of Multi-Reads: 11030416 (with 22482747 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+> Map Properties:
+>       Normalized Map Mass: 152566064.88
+>       Raw Map Mass: 166710229.69
+>       Number of Multi-Reads: 16614059 (with 32455129 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+[01:38:52] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[04:51:11] Learning bias parameters.
+[05:55:20] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 468 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 468 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+
+#combinacion B52, B53
+
+mkdir cuffdiff-b52-b53
+
+cd cuffdiff-b52-b53
+
+
+cuffdiff -o ./ \
+-L B52,B53 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B52-1_S24_L002_Aligned.out.sorted.bam,../mapped/B52-B1_S43_L003_Aligned.out.sorted.bam,../mapped/B52_S10_L001_Aligned.out.sorted.bam \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam,../mapped/B53_S44_L003_Aligned.out.sorted.bam
+
+
+########   deje corriendo sabado 2 am
+
+>       Number of Multi-Reads: 46638106 (with 110906330 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 304.71
+>                  Estimated Std Dev: 172.57
+> Map Properties:
+>       Normalized Map Mass: 119821134.32
+>       Raw Map Mass: 88844473.37
+>       Number of Multi-Reads: 24449117 (with 55447735 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 301.03
+>                  Estimated Std Dev: 171.42
+[01:55:45] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[06:00:05] Learning bias parameters.
+[06:58:54] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 688 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 688 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+#combinacion B52, B54
+
+mkdir cuffdiff-b52-b54
+
+cd cuffdiff-b52-b54
+
+
+cuffdiff -o ./ \
+-L B52,B54 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B52-1_S24_L002_Aligned.out.sorted.bam,../mapped/B52-B1_S43_L003_Aligned.out.sorted.bam,../mapped/B52_S10_L001_Aligned.out.sorted.bam \
+../mapped/B54-2_S46_L003_Aligned.out.sorted.bam,../mapped/B54_S12_L001_Aligned.out.sorted.bam
+
+########   deje corriendo sabado 2 am
+
+>       Number of Multi-Reads: 24902411 (with 56935840 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 316.54
+>                  Estimated Std Dev: 179.14
+> Map Properties:
+>       Normalized Map Mass: 117999979.69
+>       Raw Map Mass: 143730048.11
+>       Number of Multi-Reads: 44902626 (with 105836675 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 312.17
+>                  Estimated Std Dev: 178.14
+[01:28:11] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[04:14:33] Learning bias parameters.
+[04:57:02] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 754 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 754 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+#combinacion B52, CrT
+
+mkdir cuffdiff-b52-crt
+
+cd cuffdiff-b52-crt
+
+cuffdiff -o ./ \
+-L B52,CrT \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B52-1_S24_L002_Aligned.out.sorted.bam,../mapped/B52-B1_S43_L003_Aligned.out.sorted.bam,../mapped/B52_S10_L001_Aligned.out.sorted.bam \
+../mapped/CRT-1_S29_L002_Aligned.out.sorted.bam,../mapped/CRT-B1_S18_L001_Aligned.out.sorted.bam,../mapped/CRT-B_S17_L001_Aligned.out.sorted.bam
+
+#deje corriendo sabado 16.30 hs
+
+>       Number of Multi-Reads: 14609938 (with 29777527 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+> Map Properties:
+>       Normalized Map Mass: 143063614.24
+>       Raw Map Mass: 129639596.26
+>       Number of Multi-Reads: 25131470 (with 56605493 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+[16:08:14] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[19:22:51] Learning bias parameters.
+[20:18:34] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 636 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 636 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+#combinacion B52, B5T
+
+mkdir cuffdiff-b52-b5t
+
+cd cuffdiff-b52-b5t
+
+
+cuffdiff -o ./ \
+-L B52,B5T \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B52-1_S24_L002_Aligned.out.sorted.bam,../mapped/B52-B1_S43_L003_Aligned.out.sorted.bam,../mapped/B52_S10_L001_Aligned.out.sorted.bam \
+../mapped/B5T-1_S26_L002_Aligned.out.sorted.bam,../mapped/B5T-B_S48_L003_Aligned.out.sorted.bam,../mapped/B5T-C_S13_L001_Aligned.out.sorted.bam,../mapped/B5T_S47_L003_Aligned.out.sorted.bam
+
+#deje corriendo sabado 16.30 hs
+
+>       Number of Multi-Reads: 59495130 (with 140151311 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 308.64
+>                  Estimated Std Dev: 170.30
+> Map Properties:
+>       Normalized Map Mass: 129998342.91
+>       Raw Map Mass: 97301265.25
+>       Number of Multi-Reads: 28231387 (with 65739221 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 295.15
+>                  Estimated Std Dev: 169.64
+[16:39:22] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[02:44:18] Learning bias parameters.
+[03:43:07] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 761 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 761 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+######################################################################
+
+
+
+
+
+
+##########    Combinaciones de Cr3 (excepto Cr1, B51, Cr2, B52) son 4 
+
+
+
+
+
+#combinacion Cr3, B53
+
+mkdir cuffdiff-cr3-b53
+
+cd cuffdiff-cr3-b53
+
+
+cuffdiff -o ./ \
+-L Cr3,B53 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR3-B1_S28_L002_Aligned.out.sorted.bam,../mapped/CR3-B_S54_L003_Aligned.out.sorted.bam,../mapped/CR3_S16_L001_Aligned.out.sorted.bam \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam,../mapped/B53_S44_L003_Aligned.out.sorted.bam
+
+#deje corriendo sabado 16.30 hs
+
+>       Number of Multi-Reads: 46638106 (with 110906330 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 304.71
+>                  Estimated Std Dev: 172.57
+> Map Properties:
+>       Normalized Map Mass: 167020695.94
+>       Raw Map Mass: 88844473.37
+>       Number of Multi-Reads: 24449117 (with 55447735 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 301.03
+>                  Estimated Std Dev: 171.42
+[16:25:32] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[20:12:20] Learning bias parameters.
+[21:18:28] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 576 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 576 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+	
+#combinacion Cr3, B54
+
+mkdir cuffdiff-cr3-b54
+
+cd cuffdiff-cr3-b54
+
+cuffdiff -o ./ \
+-L Cr3,B54 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR3-B1_S28_L002_Aligned.out.sorted.bam,../mapped/CR3-B_S54_L003_Aligned.out.sorted.bam,../mapped/CR3_S16_L001_Aligned.out.sorted.bam \
+../mapped/B54-2_S46_L003_Aligned.out.sorted.bam,../mapped/B54_S12_L001_Aligned.out.sorted.bam
+
+#deje corriendo sabado 16.30 hs
+
+>       Number of Multi-Reads: 24902411 (with 56935840 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 316.54
+>                  Estimated Std Dev: 179.14
+> Map Properties:
+>       Normalized Map Mass: 161899333.39
+>       Raw Map Mass: 143730048.11
+>       Number of Multi-Reads: 44902626 (with 105836675 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 312.17
+>                  Estimated Std Dev: 178.14
+[16:00:48] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[18:28:33] Learning bias parameters.
+[19:21:08] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 475 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 475 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+#combinacion Cr3, CrT
+
+mkdir cuffdiff-cr3-crt
+
+cd cuffdiff-cr3-crt
+
+cuffdiff -o ./ \
+-L Cr3,CrT \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR3-B1_S28_L002_Aligned.out.sorted.bam,../mapped/CR3-B_S54_L003_Aligned.out.sorted.bam,../mapped/CR3_S16_L001_Aligned.out.sorted.bam \
+../mapped/CRT-1_S29_L002_Aligned.out.sorted.bam,../mapped/CRT-B1_S18_L001_Aligned.out.sorted.bam,../mapped/CRT-B_S17_L001_Aligned.out.sorted.bam
+
+#deje corriendo sabado 16.30 hs
+
+>       Number of Multi-Reads: 14609938 (with 29777527 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+> Map Properties:
+>       Normalized Map Mass: 136212904.18
+>       Raw Map Mass: 129639596.26
+>       Number of Multi-Reads: 25131470 (with 56605493 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+[16:13:47] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[19:12:17] Learning bias parameters.
+[20:24:16] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 321 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 321 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+
+#combinacion Cr3, B5T
+
+mkdir cuffdiff-cr3-b5t
+
+cd cuffdiff-cr3-b5t
+
+cuffdiff -o ./ \
+-L Cr3,B5T \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CR3-B1_S28_L002_Aligned.out.sorted.bam,../mapped/CR3-B_S54_L003_Aligned.out.sorted.bam,../mapped/CR3_S16_L001_Aligned.out.sorted.bam \
+../mapped/B5T-1_S26_L002_Aligned.out.sorted.bam,../mapped/B5T-B_S48_L003_Aligned.out.sorted.bam,../mapped/B5T-C_S13_L001_Aligned.out.sorted.bam,../mapped/B5T_S47_L003_Aligned.out.sorted.bam
+
+#deje corriendo domingo 20.20 hs
+
+>       Number of Multi-Reads: 59495130 (with 140151311 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 308.64
+>                  Estimated Std Dev: 170.30
+> Map Properties:
+>       Normalized Map Mass: 177246178.54
+>       Raw Map Mass: 97301265.25
+>       Number of Multi-Reads: 28231387 (with 65739221 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 295.15
+>                  Estimated Std Dev: 169.64
+[20:29:44] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[00:51:21] Learning bias parameters.
+[01:57:19] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 626 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 626 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+###############################################################
+
+###############     Combinaciones de B53 (excepto Cr1, B51, Cr2, B52, Cr3) son 3
+
+
+#combinacion B53, B54
+
+mkdir cuffdiff-b53-b54
+
+cd cuffdiff-b53-b54
+
+
+cuffdiff -o ./ \
+-L B53,B54 \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam,../mapped/B53_S44_L003_Aligned.out.sorted.bam \
+../mapped/B54-2_S46_L003_Aligned.out.sorted.bam,../mapped/B54_S12_L001_Aligned.out.sorted.bam
+
+#deje corriendo domingo 20.20 hs
+
+>       Number of Multi-Reads: 24902411 (with 56935840 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 316.54
+>                  Estimated Std Dev: 179.14
+> Map Properties:
+>       Normalized Map Mass: 114482850.33
+>       Raw Map Mass: 143730048.11
+>       Number of Multi-Reads: 44902626 (with 105836675 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 312.17
+>                  Estimated Std Dev: 178.14
+[20:25:45] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[23:56:20] Learning bias parameters.
+[00:49:07] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 869 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 869 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+#combinacion B53, CrT
+
+mkdir cuffdiff-b53-crt
+
+cd cuffdiff-b53-crt
+
+cuffdiff -o ./ \
+-L B53,CrT \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam,../mapped/B53_S44_L003_Aligned.out.sorted.bam \
+../mapped/CRT-1_S29_L002_Aligned.out.sorted.bam,../mapped/CRT-B1_S18_L001_Aligned.out.sorted.bam,../mapped/CRT-B_S17_L001_Aligned.out.sorted.bam
+
+#deje corriendo domingo 20.20 hs
+
+>       Number of Multi-Reads: 14609938 (with 29777527 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+> Map Properties:
+>       Normalized Map Mass: 150094970.58
+>       Raw Map Mass: 129639596.26
+>       Number of Multi-Reads: 25131470 (with 56605493 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+[20:21:06] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[00:32:52] Learning bias parameters.
+[01:39:01] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 721 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 721 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+#combinacion B53, B5T
+
+mkdir cuffdiff-b53-b5t
+
+cd cuffdiff-b53-b5t
+
+
+cuffdiff -o ./ \
+-L B53,B5T \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B53-1_S25_L002_Aligned.out.sorted.bam,../mapped/B53-B1_S45_L003_Aligned.out.sorted.bam,../mapped/B53-B_S11_L001_Aligned.out.sorted.bam,../mapped/B53_S44_L003_Aligned.out.sorted.bam \
+../mapped/B5T-1_S26_L002_Aligned.out.sorted.bam,../mapped/B5T-B_S48_L003_Aligned.out.sorted.bam,../mapped/B5T-C_S13_L001_Aligned.out.sorted.bam,../mapped/B5T_S47_L003_Aligned.out.sorted.bam
+
+#deje corriendo domingo 20.20 hs
+
+
+>       Number of Multi-Reads: 59495130 (with 140151311 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 308.64
+>                  Estimated Std Dev: 170.30
+> Map Properties:
+>       Normalized Map Mass: 126270668.00
+>       Raw Map Mass: 97301265.25
+>       Number of Multi-Reads: 28231387 (with 65739221 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 295.15
+>                  Estimated Std Dev: 169.64
+[22:14:18] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[07:47:46] Learning bias parameters.
+[08:49:43] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 787 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 787 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+
+
+
+###############################################################
+
+
+###############     Combinaciones de B54 (excepto Cr1, B51, Cr2, B52, Cr3, B53) son 2
+
+
+
+
+#combinacion B54, CrT
+
+mkdir cuffdiff-b54-crt
+
+cd cuffdiff-b54-crt
+
+
+cuffdiff -o ./ \
+-L B54,CrT \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B54-2_S46_L003_Aligned.out.sorted.bam,../mapped/B54_S12_L001_Aligned.out.sorted.bam \
+../mapped/CRT-1_S29_L002_Aligned.out.sorted.bam,../mapped/CRT-B1_S18_L001_Aligned.out.sorted.bam,../mapped/CRT-B_S17_L001_Aligned.out.sorted.bam
+
+#deje corriendo lunes 14 hs
+
+>       Number of Multi-Reads: 14609938 (with 29777527 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+> Map Properties:
+>       Normalized Map Mass: 150055309.31
+>       Raw Map Mass: 129639596.26
+>       Number of Multi-Reads: 25131470 (with 56605493 total hits)
+>       Fragment Length Distribution: Truncated Gaussian (default)
+>                     Default Mean: 200
+>                  Default Std Dev: 80
+[13:36:15] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[16:14:36] Learning bias parameters.
+[17:01:39] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 675 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 675 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
+
+
+
+#combinacion B54, B5T
+
+mkdir cuffdiff-b54-b5t
+
+cd cuffdiff-b54-b5t
+
+cuffdiff -o ./ \
+-L B54,B5T \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/B54-2_S46_L003_Aligned.out.sorted.bam,../mapped/B54_S12_L001_Aligned.out.sorted.bam \
+../mapped/B5T-1_S26_L002_Aligned.out.sorted.bam,../mapped/B5T-B_S48_L003_Aligned.out.sorted.bam,../mapped/B5T-C_S13_L001_Aligned.out.sorted.bam,../mapped/B5T_S47_L003_Aligned.out.sorted.bam
+
+#en realidad este ya lo habia corrido antes (en cuffdiff-interesante)
+
+
+
+
+
+
+###############################################################
+
+###############     Combinaciones de CrT (excepto Cr1, B51, Cr2, B52, Cr3, B53, B54) es 1
+
+
+
+
+
+
+#combinacion CrT, B5T
+
+mkdir cuffdiff-crt-b5t
+
+cd cuffdiff-crt-b5t
+
+
+cuffdiff -o ./ \
+-L CrT,B5T \
+-p 28 \
+-b ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna \
+-u --library-type fr-unstranded \
+--total-hits-norm \
+../../../51.geneswithphase.gtf \
+../mapped/CRT-1_S29_L002_Aligned.out.sorted.bam,../mapped/CRT-B1_S18_L001_Aligned.out.sorted.bam,../mapped/CRT-B_S17_L001_Aligned.out.sorted.bam \
+../mapped/B5T-1_S26_L002_Aligned.out.sorted.bam,../mapped/B5T-B_S48_L003_Aligned.out.sorted.bam,../mapped/B5T-C_S13_L001_Aligned.out.sorted.bam,../mapped/B5T_S47_L003_Aligned.out.sorted.bam
+
+#deje corriendo lunes 21.30 hs
+
+>       Number of Multi-Reads: 59495130 (with 140151311 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 308.64
+>                  Estimated Std Dev: 170.30
+> Map Properties:
+>       Normalized Map Mass: 159484058.77
+>       Raw Map Mass: 97301265.25
+>       Number of Multi-Reads: 28231387 (with 65739221 total hits)
+>       Fragment Length Distribution: Empirical (learned)
+>                     Estimated Mean: 295.15
+>                  Estimated Std Dev: 169.64
+[21:32:33] Calculating preliminary abundance estimates
+> Processed 32045 loci.                        [*************************] 100%
+[02:03:35] Learning bias parameters.
+[03:11:05] Testing for differential expression and regulation in locus.
+> Processed 32045 loci.                        [*************************] 100%
+Performed 756 isoform-level transcription difference tests
+Performed 0 tss-level transcription difference tests
+Performed 756 gene-level transcription difference tests
+Performed 0 CDS-level transcription difference tests
+Performed 0 splicing tests
+Performed 0 promoter preference tests
+Performing 0 relative CDS output tests
+Writing isoform-level FPKM tracking
+Writing TSS group-level FPKM tracking
+Writing gene-level FPKM tracking
+Writing CDS-level FPKM tracking
+Writing isoform-level count tracking
+Writing TSS group-level count tracking
+Writing gene-level count tracking
+Writing CDS-level count tracking
+Writing isoform-level read group tracking
+Writing TSS group-level read group tracking
+Writing gene-level read group tracking
+Writing CDS-level read group tracking
+Writing read group info
+Writing run info
+
