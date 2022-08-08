@@ -1,0 +1,271 @@
+############   featureCounts
+
+
+
+
+
+#  featureCounts program is designed to assign mapped reads or fragments (paired-end data) to genomic features such as genes, exons and promoters.
+
+
+###### TENGO QUE USAR LOS ALINEAMIENTOS Aligned.out.bam 
+
+
+
+
+#me voy a josefina/rnaseq/star/starfinal
+
+#luego a R
+
+
+
+
+#  crear un vector con todos los bam files 
+
+
+
+
+
+bamfiles <- c("B51-1_S42/B51-1_S42Aligned.out.bam", "B51-B1_S23/B51-B1_S23Aligned.out.bam", "B51-B_S9/B51-B_S9Aligned.out.bam", "B51_S8/B51_S8Aligned.out.bam", "B52-1_S24/B52-1_S24Aligned.out.bam", "B52-B1_S43/B52-B1_S43Aligned.out.bam", "B52_S10/B52_S10Aligned.out.bam", "B53-1_S25/B53-1_S25Aligned.out.bam", "B53-B1_S45/B53-B1_S45Aligned.out.bam", "B53-B_S11/B53-B_S11Aligned.out.bam", "B53_S44/B53_S44Aligned.out.bam", "B54-2_S46/B54-2_S46Aligned.out.bam", "B54_S12/B54_S12Aligned.out.bam", "B5T-1_S26/B5T-1_S26Aligned.out.bam", "B5T-B_S48/B5T-B_S48Aligned.out.bam", "B5T-C_S13/B5T-C_S13Aligned.out.bam", "B5T_S47/B5T_S47Aligned.out.bam", "CR1-1_S50/CR1-1_S50Aligned.out.bam", "CR1-B1_S14/CR1-B1_S14Aligned.out.bam", "CR1-B_S51/CR1-B_S51Aligned.out.bam", "CR1_S49/CR1_S49Aligned.out.bam", "CR2-1_S27/CR2-1_S27Aligned.out.bam", "CR2-B_S52/CR2-B_S52Aligned.out.bam", "CR2-E_S53/CR2-E_S53Aligned.out.bam", "CR2_S15/CR2_S15Aligned.out.bam", "CR3-B1_S28/CR3-B1_S28Aligned.out.bam", "CR3-B_S54/CR3-B_S54Aligned.out.bam", "CR3_S16/CR3_S16Aligned.out.bam", "CRT-1_S29/CRT-1_S29Aligned.out.bam", "CRT-B1_S18/CRT-B1_S18Aligned.out.bam", "CRT-B_S17/CRT-B_S17Aligned.out.bam")
+
+
+
+
+
+#Read summarization
+
+library(Rsubread)
+
+
+fc <- featureCounts(files=bamfiles, annot.ext="../../../51.geneswithphase1.gtf", isGTFAnnotationFile=TRUE, GTF.featureType="exon", GTF.attrType="transcript_id", allowMultiOverlap=TRUE, countMultiMappingReads=TRUE, isPairedEnd=TRUE, nthreads=10)
+
+#demoro cerca de 15 hs
+
+
+
+
+
+
+#ver la lista que me da
+str(fc)
+
+
+#Create a DGEList object
+
+
+library(limma)
+library(edgeR)
+
+
+x <- DGEList(counts=fc$counts, genes=fc$annotation[,c("GeneID","Length")])
+
+###  mirar la tabla
+
+head(x)
+
+nrow(fc$counts)
+
+
+
+fc$stat
+
+
+
+#Filtering. Only keep in the analysis those genes which had >10 reads per million mapped reads in at least two libraries.
+
+isexpr <- rowSums(cpm(x) > 10) >= 2
+
+
+#### sobreescribo x, ahora estara filtrado
+
+
+x <- x[isexpr,]
+
+head(x)
+
+
+
+
+
+#Design matrix. Create a design matrix:
+
+
+#primero con nano pegar la tabla desde excel y guardarla como "target"
+
+#desdpues entrar a R y 
+
+target <- read.delim(file= "target", header=TRUE, sep="")
+
+
+## aca primero creo los objetos 
+
+genotype <- factor(target$genotype)
+
+treatment <- factor(target$treatment)
+
+
+
+#  y aca hago la matriz
+
+
+design <- model.matrix(~0+genotype+treatment)
+
+
+
+#### no me dejo hacer esto, me imagino que porque son 2 variables
+
+colnames(design) <- levels(genotype)
+
+colnames(design) <- levels(treatment)
+
+
+
+
+y <- voom(x,design,plot=TRUE)
+
+
+
+plotMDS(y,xlim=c(-2.5,2.5))
+
+
+
+#Linear model fitting and differential expression analysis. Fit linear models to genes
+#and assess differential expression using eBayes moderated t statistic. Here we compare sample B5 vs sample CR.
+
+
+fit <- lmFit(y,design)
+
+
+
+###############################################################
+contr <- makeContrasts(B5vsCR=B5-CR,levels=genotype)
+
+
+fit.contr <- eBayes(contrasts.fit(fit,contr))
+
+
+Error in contrasts.fit(fit, contr) : 
+  Number of rows of contrast matrix must match number of coefficients in fit
+In addition: Warning message:
+In contrasts.fit(fit, contr) :
+  row names of contrasts don't match col names of coefficients
+####################################################################
+
+
+
+
+#entonces hago esto de nuevo. esto es para comparar B5 con Cr
+
+contr <- makeContrasts(genotypeB5-genotypeCR, levels=design)
+
+
+fit.contr <- eBayes(contrasts.fit(fit,contr))
+
+
+dt <- decideTests(fit.contr)
+
+summary(dt)
+
+#List top 10 differentially expressed genes:
+
+
+options(digits=2)
+topTable(fit.contr)
+
+#### aca me dio la tabla de los 10 genes mas diferencialmente expresados entre B5 y Cr
+
+
+# nada en el cr2, varios en el cr 1
+
+
+
+
+
+######### ahora quiero ver T y 4
+
+
+contrT4 <- makeContrasts(treatmentT-treatment4, levels=design)
+
+
+fit.contrT4 <- eBayes(contrasts.fit(fit,contrT4))
+
+
+topTable(fit.contrT4)
+
+#resultados cr 2
+DCAR_007462 pos 34515243 y por ahi
+DCAR_008430 pos 42076242 hasta 42078947
+
+
+
+#############   T y 2
+
+
+contrT2 <- makeContrasts(treatmentT-treatment2, levels=design)
+
+
+fit.contrT2 <- eBayes(contrasts.fit(fit,contrT2))
+
+
+topTable(fit.contrT2)
+
+
+#resultados cr2
+DCAR_006050 pos 21246772 (igual que en T y 3)
+
+
+
+#############   T y 1
+
+
+contrT1 <- makeContrasts(treatmentT-treatment1, levels=design)
+fit.contrT1 <- eBayes(contrasts.fit(fit,contrT1))
+topTable(fit.contrT1)
+
+
+
+##error  Error in eval(ej, envir = levelsenv) : object 'treatment1' not found
+
+o sea que tengo que cambiar el nivel de referencia de treatment primero
+
+
+
+
+
+
+#############   2 y 3
+
+
+contr23 <- makeContrasts(treatment2-treatment3, levels=design)
+fit.contr23 <- eBayes(contrasts.fit(fit,contr23))
+topTable(fit.contr23)
+
+
+#resultados cr 2  DCAR_007844 pos 37561291 y por ahi 
+
+
+
+
+
+#############   1 y 4
+
+
+contr14 <- makeContrasts(treatment1-treatment4, levels=design)
+fit.contr14 <- eBayes(contrasts.fit(fit,contr14))
+topTable(fit.contr14)
+
+
+
+#############   T y 3
+
+
+contrT3 <- makeContrasts(treatmentT-treatment3, levels=design)
+fit.contrT3 <- eBayes(contrasts.fit(fit,contrT3))
+topTable(fit.contrT3)
+
+
+#resultados cr 2 
+DCAR_006050 pos 21246772 y por ahi   (al igual que en T y 2)
+DCAR_006052 pos 21256116 
+
+
+
