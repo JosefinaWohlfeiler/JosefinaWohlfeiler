@@ -1,0 +1,995 @@
+#Analisis de mis muestras de rnaseq
+
+#estoy en el servidor ssh -p 7262 josefina@carrot.vcru.wisc.edu en la carpeta /vcru_ro1/seq/carrot/rnaseq/AHGM5CDSX3
+
+#pero esa carpeta es read-only volume for safety, asi que voy a trabajar en otra que me creo Doug:
+
+/dcdata2/josefina/rnaseq
+
+#estos fastq are derived from paired‐end RNAseq data of criolla y b5 ambas en varias etapas de desarrollo: 1, 2, 3, y 4, varias repeticiones
+#containing the forward reads and the other the reverse reads
+
+#aca hay 31 muestras mias
+
+0T2-IR_S19_L002_R1_001.fastq.gz   B53-B1_S45_L003_R1_001.fastq.gz  CR2-1_S27_L002_R1_001.fastq.gz   XY32_S31_L002_R2_001.fastq.gz
+0T2-IR_S19_L002_R2_001.fastq.gz   B53-B1_S45_L003_R2_001.fastq.gz  CR2-1_S27_L002_R2_001.fastq.gz   XY33_S32_L002_R1_001.fastq.gz
+12T2-DT_S20_L002_R1_001.fastq.gz  B53-B_S11_L001_R1_001.fastq.gz   CR2-B_S52_L003_R1_001.fastq.gz   XY33_S32_L002_R2_001.fastq.gz
+12T2-DT_S20_L002_R2_001.fastq.gz  B53-B_S11_L001_R2_001.fastq.gz   CR2-B_S52_L003_R2_001.fastq.gz   XY36_S33_L002_R1_001.fastq.gz
+12T2-IR_S55_L004_R1_001.fastq.gz  B53_S44_L003_R1_001.fastq.gz     CR2-E_S53_L003_R1_001.fastq.gz   XY36_S33_L002_R2_001.fastq.gz
+12T2-IR_S55_L004_R2_001.fastq.gz  B53_S44_L003_R2_001.fastq.gz     CR2-E_S53_L003_R2_001.fastq.gz   XY37_S34_L002_R1_001.fastq.gz
+6T2-DT_S21_L002_R1_001.fastq.gz   B54-2_S46_L003_R1_001.fastq.gz   CR2_S15_L001_R1_001.fastq.gz     XY37_S34_L002_R2_001.fastq.gz
+6T2-DT_S21_L002_R2_001.fastq.gz   B54-2_S46_L003_R2_001.fastq.gz   CR2_S15_L001_R2_001.fastq.gz     XY38_S35_L002_R1_001.fastq.gz
+6T2-IR_S22_L002_R1_001.fastq.gz   B54_S12_L001_R1_001.fastq.gz     CR3-B1_S28_L002_R1_001.fastq.gz  XY38_S35_L002_R2_001.fastq.gz
+6T2-IR_S22_L002_R2_001.fastq.gz   B54_S12_L001_R2_001.fastq.gz     CR3-B1_S28_L002_R2_001.fastq.gz  XY41_S36_L002_R1_001.fastq.gz
+B51-1_S42_L003_R1_001.fastq.gz    B5T-1_S26_L002_R1_001.fastq.gz   CR3-B_S54_L003_R1_001.fastq.gz   XY41_S36_L002_R2_001.fastq.gz
+B51-1_S42_L003_R2_001.fastq.gz    B5T-1_S26_L002_R2_001.fastq.gz   CR3-B_S54_L003_R2_001.fastq.gz   XY42_S37_L002_R1_001.fastq.gz
+B51-B1_S23_L002_R1_001.fastq.gz   B5T-B_S48_L003_R1_001.fastq.gz   CR3_S16_L001_R1_001.fastq.gz     XY42_S37_L002_R2_001.fastq.gz
+B51-B1_S23_L002_R2_001.fastq.gz   B5T-B_S48_L003_R2_001.fastq.gz   CR3_S16_L001_R2_001.fastq.gz     XY43_S38_L002_R1_001.fastq.gz
+B51-B_S9_L001_R1_001.fastq.gz     B5T-C_S13_L001_R1_001.fastq.gz   CRT-1_S29_L002_R1_001.fastq.gz   XY43_S38_L002_R2_001.fastq.gz
+B51-B_S9_L001_R2_001.fastq.gz     B5T-C_S13_L001_R2_001.fastq.gz   CRT-1_S29_L002_R2_001.fastq.gz   XY52_S39_L002_R1_001.fastq.gz
+B51_S8_L001_R1_001.fastq.gz       B5T_S47_L003_R1_001.fastq.gz     CRT-B1_S18_L001_R1_001.fastq.gz  XY52_S39_L002_R2_001.fastq.gz
+B51_S8_L001_R2_001.fastq.gz       B5T_S47_L003_R2_001.fastq.gz     CRT-B1_S18_L001_R2_001.fastq.gz  XY53_S40_L002_R1_001.fastq.gz
+B52-1_S24_L002_R1_001.fastq.gz    CR1-1_S50_L003_R1_001.fastq.gz   CRT-B_S17_L001_R1_001.fastq.gz   XY53_S40_L002_R2_001.fastq.gz
+B52-1_S24_L002_R2_001.fastq.gz    CR1-1_S50_L003_R2_001.fastq.gz   CRT-B_S17_L001_R2_001.fastq.gz   XY54_S41_L002_R1_001.fastq.gz
+B52-B1_S43_L003_R1_001.fastq.gz   CR1-B1_S14_L001_R1_001.fastq.gz  Simon_Demultiplex_Stats.htm      XY54_S41_L002_R2_001.fastq.gz
+B52-B1_S43_L003_R2_001.fastq.gz   CR1-B1_S14_L001_R2_001.fastq.gz  Simon_md5sum.txt                 copy.log
+B52_S10_L001_R1_001.fastq.gz      CR1-B_S51_L003_R1_001.fastq.gz   Simon_multiqc_report.html        md5check.log
+B52_S10_L001_R2_001.fastq.gz      CR1-B_S51_L003_R2_001.fastq.gz   XY31_S30_L002_R1_001.fastq.gz
+B53-1_S25_L002_R1_001.fastq.gz    CR1_S49_L003_R1_001.fastq.gz     XY31_S30_L002_R2_001.fastq.gz
+B53-1_S25_L002_R2_001.fastq.gz    CR1_S49_L003_R2_001.fastq.gz     XY32_S31_L002_R1_001.fastq.gz
+
+
+#aca estan tambien las muestras del Pablo, todas las que empiezan con XY de xylem
+
+# las primeras 5 (10 por ser la forward y la reverse) SON UN ERROR, NO SON MIAS, ASI QUE LAS VOY A IGNORAR
+
+
+
+#mirar los files con zcat porque estan comprimidos, y con more o con head o tail porque son larguisimas
+
+zcat B51-1_S42_L003_R1_001.fastq.gz | head
+
+zcat B51-1_S42_L003_R1_001.fastq.gz | tail
+
+zcat B51-1_S42_L003_R1_001.fastq.gz | more
+
+#los que son forward (R1) van a tener un 1 en el identificador, mientras que los que son reverse (R2) tienen un 2
+
+#the first forward read and the first reverse read share the same identifier (except the /1 and /2)
+#This means that these two reads were sequenced at the two ends of the same cDNA fragment
+
+
+#Si hago wc -l en una de las muestras me da 190 M. 190/4= 47. O sea que hay 47 M de lecturas
+#despues cuando lo hago en otras me dan mas, por ejemplo 82 M
+zcat B51-1_S42_L003_R1_001.fastq.gz | wc -l
+
+
+#ver solo las cuartas lineas para ver los codigos de calidad (para ver que phread es cada una googlear fastq phred score)
+#F es bien alto , : son un poco mas bajos y # es bastante bajo
+#y que despues me diga cuales son unicos
+
+
+zcat B51-1_S42_L003_R1_001.fastq.gz | sed -n 4~4p |fold -w1 | sort -u
+
+
+#el comando sed -n4 muestra la linea 4 y luego del simbolo ~ le decis el intervalo hasta la siguiente, o sea la cuarta, la octava, la 12, etc
+
+#sed -n extraer una linea por su numero, p para que la muestre, ~ es para iterar
+
+#entonces le estoy diciendo que me muestre la cuarta fila, y despues la cuarta desde esa, y asi hasta el final
+
+#el comando fold envuelve cada línea de entrada para que se ajuste al ancho especificado. con -w1 le digo que separe todos los nucleotidos, uno #por uno
+
+#el comando sort ordena y con -u le digo que ordene y elimine los duplicados
+
+#esto me da:
+#
+,
+:
+F
+que son todos los caracteres que existen en las cuartas lineas, o sea de la calidad de las secuencias
+
+
+
+#ahora para contar cuantos hay de cada uno:
+
+#siempre antes de hacer un uniq hay que hacer un sort asi los cuenta como uno
+
+zcat B51-1_S42_L003_R1_001.fastq.gz | sed -n 4~4p |fold -w1 | sort | uniq -c
+
+#me dio: 
+3608578 #
+142092790 ,
+266054181 :
+6791582124 F
+
+zcat B51-1_S42_L003_R2_001.fastq.gz | sed -n 4~4p | fold -w1 | sort | uniq -c
+7109506 #
+217177396 ,
+303443382 :
+6675607389 F
+
+#vemos que en el reverse falla un poco mas la polimerasa
+
+zcat B54-2_S46_L003_R1_001.fastq.gz | sed -n 4~4p | fold -w1 | sort | uniq -c
+3186323 #
+122046767 ,
+239361353 :
+5993931752 F
+
+
+
+######## #########################################    quality control
+
+mkdir fastqc
+
+fastqc -h
+
+#dejo corriendo esto en dos screens
+
+fastqc -o fastqc -t 5 --extract B5*
+
+fastqc -o fastqc -t 5 --extract CR*
+
+#revisar cada fastqc_data.txt que todos tengan quality above 20 en cada posicion
+
+
+
+
+
+##################################################     Trimming
+
+#We    will    use    Trimmomatic    for    read    trimming    and    filtering,    and    adapters    removal.    
+
+
+
+
+##################   pero antes, preparar los fasta de todas las secuencias de los adaptadores
+
+########para ver cual es la secuencia hice los siguiente
+
+# abri el pdf https://vcru.wisc.edu/simonlab/bioinformatics/up/notebook/0074/20191021_illumina-adapter-sequences-1000000002694-11.pdf
+
+# luego abri esto file://home/josefina/wisconsin/rnaseq/scripts-mis-muestras/Simon_Demultiplex_Stats.htm
+
+# este ultimo me da las barcode sequences de todas mis muestras, entonces, para la muestra B51: copie la parte izq GGACTTGGAT (por las dudas las primeras 8)
+
+#y la pegue usando less de la sgte forma 
+
+#less B51_S8_L001_R1_001.fastq.gz, enter, luego /GGACTTGG, enter. Ahi me resalta todos los barcodes.
+
+#entonces marco la parte que esta a la izquierda, unos 15 nt mas o menos, por ej CTGAACTCCAGTCAC, lo copio y lo pego en el pdf con ctrl+F
+
+#de esta forma me va a encontrar el index GATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+
+#si hago lo mismo con la parte derecha me va a encontrar el index tambien 
+
+
+
+
+#  lo hago bien con una muestra:
+
+#less B51_S8_L001_R1_001.fastq.gz, enter, luego /GGACTTGG, enter. Ahi me resalta todos los barcodes.
+#entonces marco la parte que esta a la izquierda, unos 15 nt mas o menos, por ej CTGAACTCCAGTCAC, lo copio y lo pego en el pdf con ctrl+F
+
+#de esta forma me va a encontrar el index de la ozq: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+
+#si hago lo mismo con la parte derecha   ATCTCGTATGCCGT me va a encontrar el index de la derecha ATCTCGTATGCCGTCTTCTGCTTG
+
+
+
+########    ahora para el R2  es diferente porque es el reverse complement!
+
+#less B51_S8_L001_R2_001.fastq.gz, enter, luego / [el reverse complement de la parte derecha CGCAGACG AC] que es GT CGTCTGCG (solo las ultimas 8)
+
+#Ahi me resalta los barcodes
+
+# entonces marco la parte que esta a la izquierda, unos 15 nt mas o menos, por e GTGTAGGGAAAGAGT, hago el rev compl ACTCTTTCCCTACAC, lo copio y lo pego en el #pdf con ctrl+F
+
+#de esta forma encuentra ACACTCTTTCCCTACACGACGCTCTTCCGATCT
+
+#de esta secuencia que encuentre es el reverse complement AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT el del lado izq
+
+
+
+
+#ahora del lado derecho
+
+#marco la parte que esta a la derecha, unos 15 nt mas o menos, por ej GTGTAGATCTCGGTG, hago el rev compl CACCGAGATCTACAC, lo copio y lo pego en el #pdf con ctrl+F
+
+#de esta forma encuentra AATGATACGGCGACCACCGAGATCTACAC
+
+#de esta secuencia que encuentre es el reverse complement GTGTAGATCTCGGTGGTCGCCGTATCATT  el del lado derecho
+
+
+
+
+# puedo hacer al reves, copiar la parte izquierda, hacer el rev compl, hacer ctr find, y me va a dar la parte de la derecha 
+
+
+
+##########   una vez que los encontre puedo disenar los adaptadores
+
+
+
+
+#>>prefixTruSeq/1
+
+#GATCGGAAGAGCACACGTCTGAACTCCAGTCAC GGACTTGG ATCTCGTATGCCGTCTTCTGCTTG
+
+#>>prefixTruSeq/2
+
+#AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT CAGACGAC GTGTAGATCTCGGTGGTCGCCGTATCATT
+
+
+#######################  Aca empiezan
+
+#Muestra B51-1
+
+fwd='/dcdata2/josefina/rnaseq/B51-1_S42_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B51-1.fna
+
+#Muestra B51-B1
+
+fwd='/dcdata2/josefina/rnaseq/B51-B1_S23_L002_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B51-B1.fna
+
+
+#Muestra B51-B
+
+fwd='/dcdata2/josefina/rnaseq/B51-B_S9_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B51-B.fna
+
+
+
+#Muestra B51
+
+fwd='/dcdata2/josefina/rnaseq/B51_S8_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B51.fna
+
+
+#Muestra B52-1
+
+fwd='/dcdata2/josefina/rnaseq/B52-1_S24_L002_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B52-1.fna
+
+
+#Muestra B52-B1 
+
+fwd='/dcdata2/josefina/rnaseq/B52-B1_S43_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B52-B1.fna
+
+
+#Muestra B52
+
+fwd='/dcdata2/josefina/rnaseq/B52_S10_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B52.fna
+
+#Muestra B53-1
+
+fwd='/dcdata2/josefina/rnaseq/B53-1_S25_L002_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B53-1.fna
+
+
+#Muestra B53-B1
+
+fwd='/dcdata2/josefina/rnaseq/B53-B1_S45_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B53-B1.fna
+
+
+
+#Muestra B53-B
+
+fwd='/dcdata2/josefina/rnaseq/B53-B_S11_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B53-B.fna
+
+
+#Muestra B53
+
+fwd='/dcdata2/josefina/rnaseq/B53_S44_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B53.fna
+
+
+#Muestra B54-2
+
+fwd='/dcdata2/josefina/rnaseq/B54-2_S46_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B54-2.fna
+
+
+#Muestra B54
+
+fwd='/dcdata2/josefina/rnaseq/B54_S12_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B54.fna
+
+
+#Muestra B5T-1
+
+fwd='/dcdata2/josefina/rnaseq/B5T-1_S26_L002_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B5T-1.fna
+
+
+
+#Muestra B5T-B
+
+fwd='/dcdata2/josefina/rnaseq/B5T-B_S48_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B5T-B.fna
+
+
+
+#Muestra B5T-C
+
+fwd='/dcdata2/josefina/rnaseq/B5T-C_S13_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B5T-C.fna
+
+
+
+#Muestra B5T
+
+fwd='/dcdata2/josefina/rnaseq/B5T_S47_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-B5T.fna
+
+
+
+####################################
+
+
+#Muestra CR1-1
+
+fwd='/dcdata2/josefina/rnaseq/CR1-1_S50_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR1-1.fna
+
+
+#Muestra CR1-B1
+
+fwd='/dcdata2/josefina/rnaseq/CR1-B1_S14_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR1-B1.fna
+
+
+#Muestra CR1-B
+
+fwd='/dcdata2/josefina/rnaseq/CR1-B_S51_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR1-B.fna
+
+
+#Muestra CR1
+
+fwd='/dcdata2/josefina/rnaseq/CR1_S49_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR1.fna
+
+
+#Muestra CR2-1
+
+fwd='/dcdata2/josefina/rnaseq/CR2-1_S27_L002_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR2-1.fna
+
+
+#Muestra CR2-B
+
+fwd='/dcdata2/josefina/rnaseq/CR2-B_S52_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR2-B.fna
+
+
+#Muestra CR2-E
+
+fwd='/dcdata2/josefina/rnaseq/CR2-E_S53_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR2-E.fna
+
+
+#Muestra CR2
+
+fwd='/dcdata2/josefina/rnaseq/CR2_S15_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR2.fna
+
+
+#Muestra CR3-B1
+
+fwd='/dcdata2/josefina/rnaseq/CR3-B1_S28_L002_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR3-B1.fna
+
+
+#Muestra CR3-B
+
+fwd='/dcdata2/josefina/rnaseq/CR3-B_S54_L003_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR3-B.fna
+
+
+#Muestra CR3
+
+fwd='/dcdata2/josefina/rnaseq/CR3_S16_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CR3.fna
+
+
+#Muestra CRT-1
+
+fwd='/dcdata2/josefina/rnaseq/CRT-1_S29_L002_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CRT-1.fna
+
+
+#Muestra CRT-B1
+
+fwd='/dcdata2/josefina/rnaseq/CRT-B1_S18_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CRT-B1.fna
+
+
+#Muestra CRT-B
+
+fwd='/dcdata2/josefina/rnaseq/CRT-B_S17_L001_R1_001.fastq.gz'
+rev=$(echo $fwd | sed -e 's/_R1/_R2/')
+barcode1=$(zcat $fwd | head -n 1 | sed -e 's/.*://' -e 's/\+.*//' -e 's/..$//')
+barcode2=$(zcat $fwd | head -n 1 | sed -e 's/.*+//' -e 's/..$//' | bb.revcomp)
+echo ">PrefixTruSeq/1
+GATCGGAAGAGCACACGTCTGAACTCCAGTCAC${barcode1}ATCTCGTATGCCGTCTTCTGCTTG
+>PrefixTruSeq/2
+AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT${barcode2}GTGTAGATCTCGGTGGTCGCCGTATCATT" > adapterfile-CRT-B.fna
+
+
+############################################################         REVISO SI ESTAN LOS ADAPTADORES EN LOS FASTQ
+
+
+############   esta es la secuencia exacta de cada adaptador, por lo tanto hay mas
+
+zcat CRT-B_S17_L001_R1_001.fastq.gz | grep GATCGGAAGAGCACACGTCTGAACTCCAGTCACTTATAACCATCTCGTATGCCGTCTTCTGCTTG | wc -l
+#168420 de un total de 75984395, o sea que es el 0.22 %
+zcat CRT-B_S17_L001_R2_001.fastq.gz | grep AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTTCGATATCGTGTAGATCTCGGTGGTCGCCGTATCATT | wc -l
+#15931 de un total de 75984395, o sea que es el 0.021 %
+
+
+zcat B52-B1_S43_L003_R1_001.fastq.gz | grep GATCGGAAGAGCACACGTCTGAACTCCAGTCACTCTCTACTATCTCGTATGCCGTCTTCTGCTTG | wc -l
+# 102737 de un total de 44972272, o sea que es el 0.23 %
+zcat B52-B1_S43_L003_R2_001.fastq.gz | grep AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTGAACCGCGGTGTAGATCTCGGTGGTCGCCGTATCATT | wc -l
+# 11880  de un total de 44972272, o sea el 0.026 %
+
+
+
+
+zcat trimmed_fastq/B52-B1_S43_L003_R1_001.trim.paired.fq.gz | grep GATCGGAAGAGCACACGTCTGAACTCCAGTCACTCTCTACTATCTCGTATGCCGTCTTCTGCTTG | wc -l
+# 88223 de un total de  40675921   , o sea que es el 0.22  %
+
+
+
+
+#me fijo si hay secuencias que terminan en adaptadores, tanto en la original como en la trimmed
+
+zcat B53_S44_L003_R1_001.fastq.gz | grep TCGGAAGAGCACACGTCTGAACTCCAGTCACGCACGGACATCTCGTATGCCGTCTTCT$ -c
+#19199
+zcat trimmed_fastq/B53_S44_L003_R1_001.trim.paired.fq.gz | grep TCGGAAGAGCACACGTCTGAACTCCAGTCACGCACGGACATATCTCGTATGCCGTCTTCT$ -c
+#0
+
+# o sea que trimmomatic elimino los adaptadores al menos solo en los reads que terminan en adaptadores
+
+
+no es asi
+probe con el adaptador entero y no da cero, de hecho da mas que la original. Al parecer, trimmomatic elimina los nucleotidos que le siguen a los adaptadortes y no los adaptadores.
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################################### 
+
+
+
+#creo una carpeta para el output que son las secuencias trimmmed
+
+mkdir trimmed_fastq
+
+
+
+#ahora si,  usamos Trimmomatic
+
+
+
+which java
+
+java -version
+
+java -jar /usr/local/bin/Trimmomatic-0.39/trimmomatic-0.39.jar -h
+
+#aca me va a mostrar como se usa. Yo voy a usar la opcion PE (pair end)
+
+
+
+####### bucle for para todas las muestras
+
+#######################################################
+
+for file in $(ls *.fastq.gz | cut -f1-3 -d_ | sort -u)
+do adap=$(echo $file | cut -f1 -d_)
+java -jar /usr/local/bin/Trimmomatic-0.39/trimmomatic-0.39.jar PE -threads 10 -phred33 "$file"_R1_001.fastq.gz  "$file"_R2_001.fastq.gz  trimmed_fastq/"$file"_R1_001.trim.paired.fq.gz trimmed_fastq/"$file"_R1_001.trim.unpaired.fq.gz trimmed_fastq/"$file"_R2_001.trim.paired.fq.gz trimmed_fastq/"$file"_R2_001.trim.unpaired.fq.gz ILLUMINACLIP:adapterfile-"$adap".fna:2:30:10 SLIDINGWINDOW:4:15 LEADING:20 TRAILING:20 MINLEN:36
+
+##############################################################
+
+#ILLUMINACLIP:adapterfile-B52-B1.fna:2:30:10
+
+#Estos numeros son: la cantidad de bases que pueden no coincidir (2) (o sea que igual lo reconoce como un adaptador); la puntuacion de #alineamiento de dos lecturas que tienen contaminacion del adaptador (30); la puntuacion a los adaptadores que coinciden en la secuencia de #lectura (10). Los dos ultimos, mientras mas altos, mas estrictos.
+
+
+#Los trimmed-paired son las lecturas que ambas (forward y reverse) sobrevivieron el trimming (have manteined their mate); las unpaired, una de #ellas sobrevivio (have lost their mate). Estas ultimas se podrian usar como single-end (SE), pero nosotros vamos a usar las paired (PE).
+
+#We will use only the paired files, but remember that also the unpaired reads
+#could be employed by treating them as single end reads.
+
+#EL NUMERO DE READS DE LOS TRIMMED PAIRED DEBE SER EL MISMO PARA EL FORWARD Y EL REVERSE
+
+#the first read of the forward file must be the mate of the first read of the reverse file
+
+#en realidad esto no es tan asi, porque los reads no tienen el mismo tamano que los fragmentos, entonces lo que si esta bueno chequear es que los #identificadores de todas las seciencias sean los mismos en R1 y en R2. Hice lo siguiente:
+
+
+zcat B52-B1_S43_L003_R1_001.trim.paired.fq.gz | sed -n 1~4p | head
+
+zcat B52-B1_S43_L003_R2_001.trim.paired.fq.gz | sed -n 1~4p | head
+
+#entonces ahi compare algunos identificadores y eran iguales
+
+
+#ver si estan los adaptadores
+zcat B52-B1_S43_L003_R1_001.trim.paired.fq.gz | sed -n 2~4p | grep CGGAAGAGCACACGTCTGAACTCCAGTCACTCTCTACTATCTCGTATGCC
+#si estan, asi que no los elimino
+
+
+#ahora miro la longitud de los reads ya que ahora no son todos de 151 pb
+
+zcat B52-B1_S43_L003_R1_001.trim.paired.fq.gz | sed -n 2~4p | more
+
+#y aca veo que hay reads que han sido cortados
+
+
+
+#############################################################################################################################
+
+##########      VUELVO UNA VEZ QUE SOLUCIONE EL PROBLEMA DE LOS ADAPTADORES
+#############  DOUG SE DIO CUENTA DE QUE ESTABAN MAL LOS ADAPTADORES PORQUE ESTABAN EN PALINDROME MODE EN VEZ DE SIMPLE
+
+
+#############       ASI QUE UNA VEZ QUE LOS HICE DE NUEVO SIGO ACA
+
+##############                 TRIMMOMATIC PARA TODAS LAS MUESTRAS
+
+for file in $(ls *.fastq.gz | cut -f1-3 -d_ | sort -u)
+do adap=$(echo $file | cut -f1 -d_)
+java -jar /usr/local/bin/Trimmomatic-0.39/trimmomatic-0.39.jar PE -threads 10 -phred33 "$file"_R1_001.fastq.gz  "$file"_R2_001.fastq.gz  trimmed_fastq/"$file"_R1_001.trim.paired.fq.gz trimmed_fastq/"$file"_R1_001.trim.unpaired.fq.gz trimmed_fastq/"$file"_R2_001.trim.paired.fq.gz trimmed_fastq/"$file"_R2_001.trim.unpaired.fq.gz ILLUMINACLIP:adapterfile-"$adap".fna:4:30:10 SLIDINGWINDOW:4:15 LEADING:20 TRAILING:20 MINLEN:36 
+done
+
+
+
+####revisar si los adaptadores fueron eliminados. Hice lo siguiente
+
+zcat trimmed_fastq/CRT-B_S17_L001_R1_001.trim.paired.fq.gz | grep GGAAGAGCACACGTCTGAACTCCAGTCACTTATAACCATCTCGTATG
+#no encontro ninguno
+
+zcat CRT-B_S17_L001_R1_001.fastq.gz | grep GGAAGAGCACACGTCTGAACTCCAGTCACTTATAACCATCTCGTATG | wc -l
+#me dio 869837
+
+#esto quiere decir que los elimino!!!
+
+
+
+########### revisar si realmente el trimming subio la calidad de las secuencias
+
+cd trimmed_fastq/
+
+mkdir fastqc
+
+#correr solo las B51 primero
+
+fastqc -o fastqc -t 5 --extract B51*.paired.fq.gz
+
+#primero revisar si bajo el porcentaje de adaptadores. ver en los graficos
+#descargar los graficos
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/trimmed_fastq/fastqc/B51-1_S42_L003_R1_001.trim.paired_fastqc.html /home/josefina/wisconsin/rnaseq/prueba
+
+
+#comparar esto con el fastqc de las secuencias crudas
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/fastqc/B51-1_S42_L003_R1_001_fastqc.html /home/josefina/wisconsin/rnaseq/prueba
+
+#en los graficos, bajo muchisimo el % de adaptadores de las trimmed con respecto a las originales 
+
+#en per base sequence quality mejoro la calidad
+
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/trimmed_fastq/fastqc/B51-B1_S23_L002_R1_001.trim.paired_fastqc.html /home/josefina/wisconsin/rnaseq/prueba
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/fastqc/B51-B1_S23_L002_R1_001_fastqc.html /home/josefina/wisconsin/rnaseq/prueba
+
+#en este ejemplo tambien bajo el % de adaptadores
+
+
+
+
+
+##########################################################   THE TUXEDO PIPELINE
+
+#en este tutorial se usa tophat para los splicing, y luego cufflinks para la reconstruccion del transcriptoma
+
+#Bowtie
+
+bowtie2-build --help 
+
+mkdir bt2
+
+cd bt2
+
+
+#enter     the     command     to     index     the    genome
+
+
+bowtie2-build -f ../../../../../vcru_share_s/carrot/LNRQ01/data/130.DHv2.fna DaCa
+
+mkdir insert_size
+
+cd insert_size
+
+#para la muestra B51-1
+
+bowtie2 \
+--minins 0 \
+--maxins 1000 \
+-p 28 \
+--very-fast \
+-x /dcdata2/josefina/rnaseq/bt2/DaCa \
+-1 /dcdata2/josefina/rnaseq/trimmed_fastq/B51-1_S42_L003_R1_001.trim.paired.fq.gz \
+-2 /dcdata2/josefina/rnaseq/trimmed_fastq/B51-1_S42_L003_R2_001.trim.paired.fq.gz \
+-S B51-1_S42.sam
+
+#me dio
+
+
+46648265 reads; of these:
+  46648265 (100.00%) were paired; of these:
+    21909395 (46.97%) aligned concordantly 0 times
+    1975417 (4.23%) aligned concordantly exactly 1 time
+    22763453 (48.80%) aligned concordantly >1 times
+    ----
+    21909395 pairs aligned concordantly 0 times; of these:
+      1329689 (6.07%) aligned discordantly 1 time
+    ----
+    20579706 pairs aligned 0 times concordantly or discordantly; of these:
+      41159412 mates make up the pairs; of these:
+        11009225 (26.75%) aligned 0 times
+        626336 (1.52%) aligned exactly 1 time
+        29523851 (71.73%) aligned >1 times
+88.20% overall alignment rate
+
+
+
+##        proximo paso correr los scripts siguientes que me van a dar los sorted.bam, y luego los sgtes que me dan los insert sizes metrics
+
+
+#Now    we    need    to    compute    the    distribution    of    the    distance    between    paired    reads,    its    mean    and     standard     deviation.    
+
+
+#first,  we need  to sort the SAM file by  genomic  coordinates, that is  ordering the reads  from  the    
+#beginning    of    the    chromosome    to    its    end. 
+
+
+#muestra B51-1
+java -jar /usr/local/bin/picard.jar \
+SortSam \
+INPUT=B51-1_S42.sam \
+OUTPUT=B51-1_S42.sorted.sam \
+SORT_ORDER=coordinate
+
+
+#######################
+
+
+#muestra B51-1
+java -jar /usr/local/bin/picard.jar \
+CollectInsertSizeMetrics \
+I=B51-1_S42.sorted.sam \
+O=B51-1_S42.insert_size_metrics.txt \
+H=B51-1_S42.insert_size_histogram.pdf
+
+
+
+
+#descargar histograma
+#desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/insert_size/B51-1_S42.insert_size_histogram.pdf /home/josefina/wisconsin/rnaseq/
+
+#ahora voy a hacer lo mismo sin very fast para ver la diferencia, le pongo otro nombre al output B51-1_S42_nvf.sam
+#para la muestra B51-1
+bowtie2 \
+--minins 0 \
+--maxins 1000 \
+-p 28 \
+-x /dcdata2/josefina/rnaseq/bt2/DaCa \
+-1 /dcdata2/josefina/rnaseq/trimmed_fastq/B51-1_S42_L003_R1_001.trim.paired.fq.gz \
+-2 /dcdata2/josefina/rnaseq/trimmed_fastq/B51-1_S42_L003_R2_001.trim.paired.fq.gz \
+-S B51-1_S42_nvf.sam
+
+#me dio
+46648265 reads; of these:
+  46648265 (100.00%) were paired; of these:
+    20548678 (44.05%) aligned concordantly 0 times
+    2146709 (4.60%) aligned concordantly exactly 1 time
+    23952878 (51.35%) aligned concordantly >1 times
+    ----
+    20548678 pairs aligned concordantly 0 times; of these:
+      1011270 (4.92%) aligned discordantly 1 time
+    ----
+    19537408 pairs aligned 0 times concordantly or discordantly; of these:
+      39074816 mates make up the pairs; of these:
+        7772535 (19.89%) aligned 0 times
+        520677 (1.33%) aligned exactly 1 time
+        30781604 (78.78%) aligned >1 times
+91.67% overall alignment rate
+
+#al parecer es mejor. Estudiar
+
+
+#una vez que termine voy con estas otras 2
+
+
+#muestra B51-1
+java -jar /usr/local/bin/picard.jar \
+SortSam \
+INPUT=B51-1_S42_nvf.sam \
+OUTPUT=B51-1_S42_nvf.sorted.sam \
+SORT_ORDER=coordinate
+
+#muestra B51-1
+java -jar /usr/local/bin/picard.jar \
+CollectInsertSizeMetrics \
+I=B51-1_S42_nvf.sorted.sam \
+O=B51-1_S42_nvf.insert_size_metrics.txt \
+H=B51-1_S42_nvf.insert_size_histogram.pdf
+
+
+
+#####################################   ahora hacer todas las demas muestras, las 3 corridas que me dan los datos en insert_size
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########             TopHat
+
+
+#TopHat2,    an    aligner    that    performs    spliced    alignments.
+#TopHat2    employs     Bowtie2     to     align     the     reads     to     the     genome
+
+tophat2 --help
+
+#crear un directorio
+
+mkdir tophat_out
+
+
+#muestra B51-1
+tophat2 \
+-o tophat_out/B51-1_S42 \
+-N 1 \
+-g 2 \
+--library-type fr-unstranded \
+-p 28 \
+--mate-inner-dist -96 \
+--mate-std-dev 55 \
+--solexa-quals \
+bt2/DaCa \
+trimmed_fastq/B51-1_S42_L003_R1_001.trim.paired.fq.gz \
+trimmed_fastq/B51-1_S42_L003_R2_001.trim.paired.fq.gz
+
+#esta corrida demoro 7 hs 34 minutos
+
+#dio esto
+Left reads:
+          Input     :  46648265
+           Mapped   :  12314205 (26.4% of input)
+            of these:   7253170 (58.9%) have multiple alignments (2711470 have >2)
+Right reads:
+          Input     :  46648265
+           Mapped   :  13458073 (28.9% of input)
+            of these:   8347639 (62.0%) have multiple alignments (2694658 have >2)
+27.6% overall read mapping rate.
+
+Aligned pairs:   9226923
+     of these:   4582887 (49.7%) have multiple alignments
+                 1416629 (15.4%) are discordant alignments
+16.7% concordant pair alignment rate.
+
+#creo que es malo el alineamiento
+
