@@ -1,0 +1,986 @@
+
+#################featureCounts, edgeR y limma
+
+
+
+
+
+
+############   featureCounts
+
+
+
+#  featureCounts program is designed to assign mapped reads or fragments (paired-end data) to genomic features such as genes, exons and promoters.
+
+
+###### TENGO QUE USAR LOS ALINEAMIENTOS Aligned.out.bam 
+
+
+#me voy a josefina/rnaseq/star/starfinal
+
+#luego a R
+
+
+#  crear un vector con todos los bam files 
+
+bamfiles <- c("B51-1_S42/B51-1_S42Aligned.out.bam", "B51-B1_S23/B51-B1_S23Aligned.out.bam", "B51-B_S9/B51-B_S9Aligned.out.bam", "B51_S8/B51_S8Aligned.out.bam", "B52-1_S24/B52-1_S24Aligned.out.bam", "B52-B1_S43/B52-B1_S43Aligned.out.bam", "B52_S10/B52_S10Aligned.out.bam", "B53-1_S25/B53-1_S25Aligned.out.bam", "B53-B1_S45/B53-B1_S45Aligned.out.bam", "B53-B_S11/B53-B_S11Aligned.out.bam", "B53_S44/B53_S44Aligned.out.bam", "B54-2_S46/B54-2_S46Aligned.out.bam", "B54_S12/B54_S12Aligned.out.bam", "B5T-1_S26/B5T-1_S26Aligned.out.bam", "B5T-B_S48/B5T-B_S48Aligned.out.bam", "B5T-C_S13/B5T-C_S13Aligned.out.bam", "B5T_S47/B5T_S47Aligned.out.bam", "CR1-1_S50/CR1-1_S50Aligned.out.bam", "CR1-B1_S14/CR1-B1_S14Aligned.out.bam", "CR1-B_S51/CR1-B_S51Aligned.out.bam", "CR1_S49/CR1_S49Aligned.out.bam", "CR2-1_S27/CR2-1_S27Aligned.out.bam", "CR2-B_S52/CR2-B_S52Aligned.out.bam", "CR2-E_S53/CR2-E_S53Aligned.out.bam", "CR2_S15/CR2_S15Aligned.out.bam", "CR3-B1_S28/CR3-B1_S28Aligned.out.bam", "CR3-B_S54/CR3-B_S54Aligned.out.bam", "CR3_S16/CR3_S16Aligned.out.bam", "CRT-1_S29/CRT-1_S29Aligned.out.bam", "CRT-B1_S18/CRT-B1_S18Aligned.out.bam", "CRT-B_S17/CRT-B_S17Aligned.out.bam")
+
+
+
+
+
+#Read summarization
+
+library(Rsubread)
+
+
+fc <- featureCounts(files=bamfiles, annot.ext="../../../51.geneswithphase1.gtf", isGTFAnnotationFile=TRUE, GTF.featureType="exon", GTF.attrType="transcript_id", allowMultiOverlap=TRUE, countMultiMappingReads=TRUE, isPairedEnd=TRUE, nthreads=10)
+
+#demoro cerca de 15 hs
+
+
+
+
+#ver la lista que me da
+str(fc)
+options(digits=200)
+fc$stat
+
+
+
+
+###########################################   edgeR y limma  
+
+
+
+#Create a DGEList object
+
+
+library(limma)
+library(edgeR)
+
+
+x <- DGEList(counts=fc$counts, genes=fc$annotation[,c("GeneID","Length")])
+
+###  mirar la tabla
+
+head(x)
+
+class(x)
+
+nrow(fc$counts)
+#32113
+
+dim(x)
+#32113  31
+
+
+
+#Filtering. Only keep in the analysis those genes which had >10 reads per million mapped reads in at least two libraries.
+
+isexpr <- rowSums(cpm(x) > 10) >= 2
+
+
+#### sobreescribo x, ahora estara filtrado
+
+x <- x[isexpr,]
+
+
+class(x)
+
+## [1] "DGEList"
+## attr(,"package")
+## [1] "edgeR"
+
+dim(x)
+
+
+
+
+#########################################  RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR (a partir de pag 4)
+
+
+#Organising sample information
+
+#eliminar "Aligned.out.bam" de los nombres de las muestras
+
+samplenames <- gsub( "Aligned.out.bam", "", colnames(x))
+
+samplenames
+
+[1] "B51.1.S42"  "B51.B1.S23" "B51.B.S9"   "B51.S8"     "B52.1.S24" 
+ [6] "B52.B1.S43" "B52.S10"    "B53.1.S25"  "B53.B1.S45" "B53.B.S11" 
+[11] "B53.S44"    "B54.2.S46"  "B54.S12"    "B5T.1.S26"  "B5T.B.S48" 
+[16] "B5T.C.S13"  "B5T.S47"    "CR1.1.S50"  "CR1.B1.S14" "CR1.B.S51" 
+[21] "CR1.S49"    "CR2.1.S27"  "CR2.B.S52"  "CR2.E.S53"  "CR2.S15"   
+[26] "CR3.B1.S28" "CR3.B.S54"  "CR3.S16"    "CRT.1.S29"  "CRT.B1.S18"
+[31] "CRT.B.S17" 
+
+
+colnames(x) <- samplenames
+
+
+
+
+###################   hacer tabla #target" en excel
+
+#primero con nano pegar la tabla desde excel y guardarla como "target"
+
+#desdpues entrar a R y y leer la tabla
+
+target <- read.delim(file= "target", header=TRUE, sep="")
+
+
+########  ahora a      x$samples   le tengo que agregar dos columnas (genotype y treatment) que estan en el file target
+
+
+## entonces     primero creo los objetos 
+
+genotype <- as.factor(target$genotype)
+treatment <- as.factor(target$treatment)
+
+
+# ahora lo agrego a x$samples
+
+x$samples$genotype<-genotype
+x$samples$treatment<-treatment
+
+###  entonces aca me lo muestra
+x$samples
+
+
+
+
+
+############    Data pre-processing
+#               Transformations from the raw-scale
+
+
+#Here raw counts are converted to CPM and log-CPM values using the cpm function in edgeR
+
+#creo los objetos cpm (cuentas por millon) y lcpm (el log en base 2 de cuentas por millon)
+
+cpm <- cpm(x)
+lcpm <- cpm(x, log=TRUE)
+
+
+#cpm divide x$counts/lib.size y eso lo multiplica por 1 millon
+
+#cpm, log true    calcula el log en base 2 de cpm 
+
+
+
+#calculo la media y la mediana de lib.size
+
+L <- mean(x$samples$lib.size) * 1e-6
+M <- median(x$samples$lib.size) * 1e-6
+c(L, M)
+#[1] 109.3111 101.7617
+
+
+summary(lcpm)
+#en general estan entre -5 y 14
+
+
+
+
+
+#              Removing genes that are lowly expressed
+
+
+#que me muestre cuantos son counts=0 y en las 31 muestras
+
+table(rowSums(x$counts==0)==31)
+########################### esto me daba sin haber hecho  isexpr <- rowSums(cpm(x) > 10) >= 2, pero al hacerlo, me da todos FALSE, tiene sentido
+#FALSE  TRUE 
+#32057    56 
+#56 son cero para todas las muestras y todos los genes
+#######################################################
+
+#Genes that do not have a worthwhile number of reads in any sample should be filtered out of the downstream analyses.
+
+
+
+#The filterByExpr function in the edgeR package provides an automatic way to filter genes, while keeping as many genes as possible with worthwhile #counts.
+
+keep.exprs <- filterByExpr(x, group=genotype)
+x <- x[keep.exprs,, keep.lib.sizes=FALSE]
+
+dim(x)
+#[1] 29570    31
+
+# no cambio mucho, antes era #32113
+
+
+#####################################################
+#######cuando lo hice con group=treatment me dio
+dim(x)
+#[1] 31289    31
+#####################################################
+
+#####################################################
+#######cuando lo hice sin nada me dio
+dim(x)
+#[1] 27424    31
+#####################################################
+
+
+
+
+
+
+
+#               Normalising gene expression distributions
+
+#normalisation by the method of trimmed mean of M-values (TMM)12 is performed using the calc-NormFactors function in edgeR.
+#When working with DGEList-objects, these normalisation factors are automatically stored in x$samples$norm.factors.
+
+#[1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+
+
+x <- calcNormFactors(x, method = "TMM")
+x$samples$norm.factors
+# [1] 1.1193450 1.0599045 1.0862206 1.1052910 1.0810272 1.0245505 1.0873654
+ [8] 1.0060424 1.0808729 1.0447600 1.1224041 1.0111219 0.9915767 0.8610694
+[15] 0.8283342 0.8759444 0.8602391 0.9752969 1.0600025 1.1019781 1.0837681
+[22] 0.9736374 0.9841315 1.0892158 1.0121456 0.9919546 1.0135979 1.1055240
+[29] 0.8111109 0.8445955 0.8542561
+
+
+
+
+
+##########################   HACER GRAFICO NORMALIZADO VS NO NORMALIZADO ###########################################################
+
+# no lo termine pero ya habia hecho una prueba con n-vs-un.pdf y me salio bien 
+
+
+#To give a better visual representation of the effects of normalisation, the data was duplicated then adjusted so that the
+#counts of the first sample are reduced to 5% of their original values, and in the second sample they are inflated to be 5-times larger.
+
+
+#ahora x2 es x sin normalizar, primero duplica x y lo llama x2, luego vuelve a los norm.fact =1 todos, luego hace esas modificaciones en la primer y segunda muestra
+
+x2 <- x
+x2$samples$norm.factors <- 1
+#aca da todos 1
+x2$counts[,1] <- ceiling(x2$counts[,1]*0.05)
+x2$counts[,2] <- x2$counts[,2]*5
+
+
+#ahora utiliza x2 para graficar no normalizado vs normalizado (en este script calcula norm.factor antes de hacer el 2do grafico)
+
+
+
+par(mfrow=c(1,2))
+lcpm <- cpm(x2, log=TRUE)
+boxplot(lcpm, las=2, main="")
+title(main="A. Example: Unnormalised data", ylab="Log-cpm")
+x2 <- calcNormFactors(x2)
+x2$samples$norm.factors
+#aca muestra que los normalizo
+#y hace el segundo grafico
+lcpm <- cpm(x2, log=TRUE)
+boxplot(lcpm, las=2, main="")
+title(main="B. Example: Normalised data", ylab="Log-cpm")
+pdf("boxplot-un-vs-n.pdf")
+
+#volver a correr el grafico
+par(mfrow=c(1,2))
+lcpm <- cpm(x2, log=TRUE)
+boxplot(lcpm, las=2, main="")
+title(main="A. Example: Unnormalised data", ylab="Log-cpm")
+x2 <- calcNormFactors(x2)
+x2$samples$norm.factors
+#aca muestra que los normalizo
+#y hace el segundo grafico
+lcpm <- cpm(x2, log=TRUE)
+boxplot(lcpm, las=2, main="")
+title(main="B. Example: Normalised data", ylab="Log-cpm")
+
+graphics.off()
+
+#desde mi compu
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/boxplot-un-vs-n.pdf /home/josefina/wisconsin/rnaseq/plots
+
+
+#############################################################################################################################################
+
+#volver a correr lcpm porque modifique x, le aplique filtros
+
+lcpm <- cpm(x, log=TRUE)
+
+###########   RECORDAR NO USAR x2 PORQUE SOLO FUE PARA GRAFICAR
+
+
+
+
+
+
+
+
+
+#                               Unsupervised clustering of samples
+
+#multi-dimensional scaling (MDS) plot shows similarities and dissimilarities between samples in an
+#unsupervised manner so that one can have an idea of the extent to which differential expression can be detected
+#before carrying out formal tests.
+
+
+library(RColorBrewer)
+
+lcpm <- cpm(x, log=TRUE)
+
+par(mfrow=c(1,2))
+col.genotype <- genotype
+levels(col.genotype) <- brewer.pal(nlevels(col.genotype), "Set1")
+col.genotype <- as.character(col.genotype)
+col.treatment <- treatment
+levels(col.treatment) <- brewer.pal(nlevels(col.treatment), "Set2")
+col.treatment <- as.character(col.treatment)
+plotMDS(lcpm, labels=genotype, col=col.genotype)
+title(main="A. Sample genotypes")
+
+plotMDS(lcpm, labels=treatment, col=col.treatment, dim=c(3,4))
+title(main="B. sample treatments")
+
+pdf("MDS3.pdf")
+#volver a correr el plot entero
+par(mfrow=c(1,2))
+col.genotype <- genotype
+levels(col.genotype) <- brewer.pal(nlevels(col.genotype), "Set1")
+col.genotype <- as.character(col.genotype)
+col.treatment <- treatment
+levels(col.treatment) <- brewer.pal(nlevels(col.treatment), "Set2")
+col.treatment <- as.character(col.treatment)
+plotMDS(lcpm, labels=genotype, col=col.genotype)
+title(main="A. Sample genotypes")
+
+plotMDS(lcpm, labels=treatment, col=col.treatment, dim=c(3,4))
+title(main="B. sample treatments")
+graphics.off()
+
+#desde mi compu
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/MDS3.pdf /home/josefina/wisconsin/rnaseq/plots/MDS3.pdf
+
+
+
+
+#############################  no me sale, no se como expertarlo
+library(Glimma)
+glMDSPlot(lcpm, labels=paste(genotype, treatment, sep="_"), groups=x$samples[,c(4,5)], launch=FALSE)
+
+
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/glimma-plots/MDS-Plot.html /home/josefina/wisconsin/rnaseq/plots/MDS-Plot.html
+####################################################
+
+
+
+
+
+
+####################################    Differential expression analysis
+
+#   Creating a design matrix and contrasts
+
+designg <- model.matrix(~0+genotype+treatment)
+
+designt <- model.matrix(~0+treatment+genotype)
+
+
+
+#Contrasts for pairwise comparisons between cell populations are set up in limma using the makeContrasts function.
+
+
+contrg <- makeContrasts(genotypeB5-genotypeCR, levels=designg)
+
+contrt <- makeContrasts(treatmentT-treatment1, treatmentT-treatment2, treatmentT-treatment3, treatmentT-treatment4, treatment1-treatment2, treatment1-treatment3, treatment1-treatment4, treatment2-treatment3, treatment2-treatment4, treatment3-treatment4, levels=designt)
+
+
+
+#        Removing heteroscedascity from count data
+
+
+#  voom function  
+
+#Transform count data to log2-counts per million (logCPM), estimate
+     the mean-variance relationship and use this to compute appropriate
+     observation-level weights. The data are then ready for linear
+     modelling.
+
+
+v <- voom(x, designg, plot=TRUE)
+pdf("voom.pdf")
+#volver a correr el plot entero
+v <- voom(x, designg, plot=TRUE)
+graphics.off()
+
+
+
+##########  desde toko 
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/voom.pdf /home/jwohlfeiler
+
+#desde mi compu
+
+scp jwohlfeiler@toko.uncu.edu.ar:/home/jwohlfeiler/voom.pdf /home/josefina/wisconsin/rnaseq/plots
+
+
+###########  The v$genes data frame is equivalent to x$genes
+###########  v$targets is equivalent to x$samples,
+###########  v$E is analogous to x$counts albeit on a transformed scale
+
+
+
+
+
+#SI QUIERO HACERLO CON TRATAMIENTOS
+vt <- voom(x, designt, plot=FALSE)
+
+
+
+
+
+
+#              Fitting linear models for comparisons of interest
+
+
+vfit <- lmFit(v, designg)
+vfit <- contrasts.fit(vfit, contrasts=contrg)
+efit <- eBayes(vfit)
+plotSA(efit)
+
+pdf("plotSA.pdf")
+#volver a correr el plot entero
+plotSA(efit)
+graphics.off()
+
+##########  desde toko 
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/plotSA.pdf /home/jwohlfeiler
+
+#desde mi compu
+
+scp jwohlfeiler@toko.uncu.edu.ar:/home/jwohlfeiler/plotSA.pdf /home/josefina/wisconsin/rnaseq/plots
+
+
+
+#SI QUIERO HACERLO CON TRATAMIENTOS
+
+vfitt <- lmFit(vt, designt)
+vfitt <- contrasts.fit(vfitt, contrasts=contrt)
+efitt <- eBayes(vfitt)
+
+
+
+
+#                            Examining the number of DE genes
+
+
+summary(decideTests(efit))
+
+#      genotypeB5 - genotypeCR
+Down                      3772
+NotSig                    9122
+Up                        3684
+
+
+summary(decideTests(efitt))
+
+#      treatmentT - treatment1 treatmentT - treatment2 treatmentT - treatment3
+Down                      4207                    4799                    4518
+NotSig                    8037                    6883                    7407
+Up                        4334                    4896                    4653
+       treatmentT - treatment4 treatment1 - treatment2 treatment1 - treatment3
+Down                      4053                    2730                    1744
+NotSig                    8845                   10947                   12921
+Up                        3680                    2901                    1913
+       treatment1 - treatment4 treatment2 - treatment3 treatment2 - treatment4
+Down                      4310                    1138                    4736
+NotSig                    8483                   14368                    7590
+Up                        3785                    1072                    4252
+       treatment3 - treatment4
+Down                      4634
+NotSig                    7751
+Up                        4193
+
+
+#Some studies require more than an adjusted p-value cutoff.
+#For a stricter definition on significance, one may require log-fold-changes (log-FCs) to be above a minimum value. The treat method17 can be used #to calculate p-values from empirical Bayes moderated t-statistics with a minimum log-FC requirement.
+
+
+
+#en los siguiente:
+# lfc: the minimum log2-fold-change that is considered
+         # scientifically meaningful
+
+tfit <- treat(vfit, lfc=1)
+dt <- decideTests(tfit)
+summary(dt)
+
+#      genotypeB5 - genotypeCR
+Down                       392
+NotSig                   15790
+Up                         396
+
+#SI QUIERO HACERLO CON TRATAMIENTOS
+
+tfitt <- treat(vfitt, lfc=1)
+dtt <- decideTests(tfitt)
+summary(dtt)
+
+#       treatmentT - treatment1 treatmentT - treatment2 treatmentT - treatment3
+Down                       443                     403                     274
+NotSig                   15892                   15703                   16071
+Up                         243                     472                     233
+       treatmentT - treatment4 treatment1 - treatment2 treatment1 - treatment3
+Down                       575                      68                      12
+NotSig                   15413                   16370                   16516
+Up                         590                     140                      50
+       treatment1 - treatment4 treatment2 - treatment3 treatment2 - treatment4
+Down                       388                       1                     576
+NotSig                   15556                   16577                   15402
+Up                         634                       0                     600
+       treatment3 - treatment4
+Down                       576
+NotSig                   15362
+Up                         640
+
+
+#objeto en el cual la columna 1 es diferente de cero
+
+de.common <- which(dt[,1]!=0)
+length(de.common)
+#788
+
+
+#que me liste los primeros 20 genes DE
+
+head(tfit$genes$GeneID[de.common], n=20)
+
+#[1] "DCAR_031562" "DCAR_031675" "DCAR_031698" "DCAR_031255" "DCAR_031282"
+ [6] "DCAR_031300" "DCAR_031343" "DCAR_031400" "DCAR_000095" "DCAR_000108"
+[11] "DCAR_000136" "DCAR_000513" "DCAR_000514" "DCAR_000518" "DCAR_000594"
+[16] "DCAR_000597" "DCAR_000613" "DCAR_000768" "DCAR_000772" "DCAR_000791"
+
+
+
+#         en el caso de los tratamientos
+
+
+#objeto en el cual las columnas 1 a 5, es decir T1, T2, T3, T4 y 12, son diferentes de cero
+
+de.commont <- which(dtt[,1]!=0 & dtt[,2]!=0 & dtt[,3]!=0 & dtt[,4]!=0 & dtt[,5]!=0)
+
+head(tfitt$genes$GeneID[de.commont], n=20)
+#"DCAR_017563" (es uno solo) 
+
+
+
+#objeto en el cual las columnas 1 a 4, es decir T1, T2, T3, T4 son diferentes de cero
+de.commonT <- which(dtt[,1]!=0 & dtt[,2]!=0 & dtt[,3]!=0 & dtt[,4]!=0)
+length(de.commonT)
+#65
+
+head(tfitt$genes$GeneID[de.commonT], n=65)
+
+#[1] "DCAR_000714" "DCAR_001210" "DCAR_002387" "DCAR_002860" "DCAR_002900"
+ [6] "DCAR_003222" "DCAR_003297" "DCAR_003393" "DCAR_003964" "DCAR_004073"
+[11] "DCAR_004463" "DCAR_005236" "DCAR_005475" "DCAR_005518" "DCAR_005789"
+[16] "DCAR_006238" "DCAR_006975" "DCAR_007083" "DCAR_007281" "DCAR_007393"
+[21] "DCAR_007454" "DCAR_007755" "DCAR_007913" "DCAR_008294" "DCAR_008306"
+[26] "DCAR_008973" "DCAR_008981" "DCAR_009839" "DCAR_009845" "DCAR_010429"
+[31] "DCAR_011688" "DCAR_011888" "DCAR_011961" "DCAR_016013" "DCAR_015969"
+[36] "DCAR_014829" "DCAR_012882" "DCAR_012858" "DCAR_012792" "DCAR_012734"
+[41] "DCAR_017030" "DCAR_017563" "DCAR_018076" "DCAR_018162" "DCAR_018654"
+[46] "DCAR_019216" "DCAR_019298" "DCAR_019751" "DCAR_021817" "DCAR_020130"
+[51] "DCAR_019975" "DCAR_019965" "DCAR_019861" "DCAR_023429" "DCAR_023432"
+[56] "DCAR_023483" "DCAR_024415" "DCAR_025247" "DCAR_025446" "DCAR_025675"
+[61] "DCAR_028871" "DCAR_027971" "DCAR_029543" "DCAR_030628" "DCAR_032098"
+
+
+#objeto en el cual las columnas 1 a 3, es decir T1, T2, T3 son diferentes de cero
+#de.commonT123 <- which(dtt[,1]!=0 & dtt[,2]!=0 & dtt[,3]!=0)
+#length(de.commonT123)
+
+
+
+
+
+
+
+
+#########                         diagramas de venn
+
+
+# la comparacion de los genotipos no se como hacerla porques es una sola columna 
+
+
+
+#tratamientos
+
+
+#Testigo con todas
+vennDiagram(dtt[,1:4], circle.col=c("turquoise", "salmon", "green", "yellow"))
+pdf("vennT.pdf")
+vennDiagram(dtt[,1:4], circle.col=c("turquoise", "salmon", "green", "yellow"))
+graphics.off()
+
+
+
+#Testigo, 1 y 4
+vennDiagram(dtt[,c(1,4)], circle.col=c("turquoise", "salmon"))
+pdf("vennT14.pdf")
+vennDiagram(dtt[,c(1,4)], circle.col=c("turquoise", "salmon"))
+graphics.off()
+
+
+#Testigo, 1, 2 y 4
+vennDiagram(dtt[,c(1,2,4)], circle.col=c("turquoise", "salmon", "green"))
+pdf("vennT124.pdf")
+vennDiagram(dtt[,c(1,2,4)], circle.col=c("turquoise", "salmon", "green"))
+graphics.off()
+
+#1, 2 y 4
+vennDiagram(dtt[,c(5,9)], circle.col=c("turquoise", "salmon"))
+pdf("venn124.pdf")
+vennDiagram(dtt[,c(5,9)], circle.col=c("turquoise", "salmon"))
+graphics.off()
+
+
+
+
+##########  desde toko 
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/resultst.txt /home/jwohlfeiler
+
+#desde mi compu
+
+scp jwohlfeiler@toko.uncu.edu.ar:/home/jwohlfeiler/resultst.txt /home/josefina/wisconsin/rnaseq/plots
+
+
+
+
+write.fit(tfitt, dtt, file="resultst.txt")
+
+
+
+
+
+
+#                    Examining individual DE genes from top to bottom
+
+
+
+#The top DE genes can be listed using topTreat for results using treat (or topTable for results using eBayes)
+
+#By default topTreat arranges genes from smallest to largest adjusted p-value with associated gene
+#information, log-FC, average log-CPM, moderated t-statistic, raw and adjusted p-value for each gene. The number
+#of top genes displayed can be specified, where n=Inf includes all genes.
+
+
+#tratamientos
+
+todos <- topTreat(tfitt, n=Inf)   #esto creo que esta mal, asi que lei el manual y al parecer es con coef=NULL
+head(todos)
+
+
+
+todoslosT <- topTreat(tfitt, coef=NULL, n=Inf)                         #creo que este esta bien
+head(todoslosT)
+#                 GeneID Length logFC AveExpr   t P.Value adj.P.Val
+DCAR_011084 DCAR_011084    948  -5.0   0.086 -18 2.2e-17   3.6e-13
+DCAR_019350 DCAR_019350   1389  -4.2   2.138 -18 5.8e-17   4.8e-13
+DCAR_004103 DCAR_004103   1302  -5.5   0.566 -17 1.4e-16   7.6e-13
+DCAR_013082 DCAR_013082   1107  -5.6   1.430 -17 1.9e-16   7.9e-13
+DCAR_005400 DCAR_005400   1992  -5.9   1.923 -16 3.0e-16   1.0e-12
+DCAR_008430 DCAR_008430    876  -4.1   1.567 -16 4.4e-16   1.2e-12    #######   pos 42076242..42078947
+
+
+
+#################   uno por uno
+
+
+T.vs.1 <- topTreat(tfitt, coef=1, n=Inf)
+T.vs.2 <- topTreat(tfitt, coef=2, n=Inf)
+T.vs.3 <- topTreat(tfitt, coef=3, n=Inf)
+T.vs.4 <- topTreat(tfitt, coef=4, n=Inf)
+head(T.vs.4)
+#               GeneID Length logFC AveExpr   t P.Value adj.P.Val
+DCAR_019350 DCAR_019350   1389  -3.9   2.138 -17 2.1e-16   3.1e-12
+DCAR_008430 DCAR_008430    876  -4.1   1.567 -16 4.7e-16   3.1e-12      #######   pos 42076242..42078947 
+DCAR_011084 DCAR_011084    948  -4.2   0.086 -16 5.7e-16   3.1e-12
+DCAR_028341 DCAR_028341   1623  -5.0  -0.193 -15 1.4e-15   5.7e-12
+DCAR_007462 DCAR_007462    378  -7.6   2.411 -15 4.6e-15   1.5e-11
+DCAR_004103 DCAR_004103   1302  -3.3   0.566 -14 1.2e-14   3.4e-11
+
+
+
+
+t1.vs.t2 <- topTreat(tfitt, coef=5, n=Inf)
+t1.vs.t3 <- topTreat(tfitt, coef=6, n=Inf)
+t1.vs.t4 <- topTreat(tfitt, coef=7, n=Inf)
+
+
+t2.vs.t3 <- topTreat(tfitt, coef=8, n=Inf)
+
+t2.vs.t4 <- topTreat(tfitt, coef=9, n=Inf)
+t3.vs.t4 <- topTreat(tfitt, coef=10, n=Inf)
+
+
+
+
+#  genotipos
+
+los2genotipos <- topTreat(tfit, coef=1, n=Inf)
+head(los2genotipos)
+#                 GeneID Length logFC AveExpr   t P.Value adj.P.Val
+DCAR_017437 DCAR_017437   2289  -6.6   1.969 -33 2.4e-24   4.1e-20
+DCAR_017963 DCAR_017963    540  -8.6   3.245 -32 7.8e-24   6.5e-20
+DCAR_007434 DCAR_007434    363 -12.6   5.725 -26 1.2e-21   6.6e-18
+DCAR_031675 DCAR_031675    375  -5.2   0.268 -24 1.6e-20   4.5e-17
+DCAR_005657 DCAR_005657   1284  -6.9  -0.029 -24 1.6e-20   4.5e-17
+DCAR_017565 DCAR_017565    969   7.1   1.999  24 1.6e-20   4.5e-17
+
+
+
+
+
+
+#          Useful graphical representations of differential expression results   (MDP)
+
+
+library(Glimma)
+library(gplots)
+library(RColorBrewer)
+
+
+#  Mean difference plot (MDP)
+
+
+############## los 2 genotipos
+
+plotMD(tfit, column=1, status=dt[,1], main=colnames(tfit)[1], xlim=c(-8,13))
+pdf("MDP-G.pdf")
+#volver a correr plot
+plotMD(tfit, column=1, status=dt[,1], main=colnames(tfit)[1], xlim=c(-8,13))
+graphics.off()
+
+
+
+#########################                          ESTOS AUN NO LOS HAGO
+
+
+
+####################  T y 1
+
+plotMD(tfitt, column=1, status=dtt[,1], main=colnames(tfitt)[1], xlim=c(-8,13))
+
+pdf("MDP-T1.pdf")
+#volver a correr plot
+plotMD(tfitt, column=1, status=dtt[,1], main=colnames(tfitt)[1], xlim=c(-8,13))
+graphics.off()
+
+
+
+
+
+#interactive mean-difference plot using Glimma
+library(Glimma)
+
+glMDPlot(tfitt, coef=1, status=dtt, main=colnames(tfitt)[1], side.main="ENTREZID", counts=lcpm, groups=treatment, launch=FALSE)
+
+#desde mi compu
+scp -r -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/glimma-plots/ /home/josefina/wisconsin/rnaseq/plots
+
+
+
+#####################  T y 2
+
+
+
+
+####################   T y 3
+
+
+
+
+#####################   T y 4
+
+#interactive mean-difference plot using Glimma
+library(Glimma)
+
+glMDPlot(tfitt, coef=4, status=dtt, main=colnames(tfitt)[4], side.main="ENTREZID", counts=lcpm, groups=treatment, launch=FALSE)
+
+
+#####################   1 y 2
+
+
+#####################   1 y 3
+
+
+
+#####################   1 y 4
+
+
+######################   2 y 3
+
+#interactive mean-difference plot using Glimma
+library(Glimma)
+
+glMDPlot(tfitt, coef=8, status=dtt, main=colnames(tfitt)[8], side.main="ENTREZID", counts=lcpm, groups=treatment, launch=FALSE)
+
+
+
+
+######################   2 y 4
+
+
+######################   3 y 4
+
+
+
+
+
+
+##########  desde toko 
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/MDP-G.pdf /home/jwohlfeiler
+
+#desde mi compu
+
+scp jwohlfeiler@toko.uncu.edu.ar:/home/jwohlfeiler/MDP-G.pdf /home/josefina/wisconsin/rnaseq/plots
+
+
+
+
+
+
+
+####################                     heatmaps
+
+
+library(gplots)
+
+
+
+
+#  tratamientos
+
+
+
+###ya habia hecho esto
+#todoslosT <- topTreat(tfitt, coef=NULL, n=Inf)
+
+
+todoslosT.topgenes <- todoslosT$GeneID[1:100]
+
+iT <- which(v$genes$GeneID %in% todoslosT.topgenes)
+
+mycol <- colorpanel(1000,"blue","white","red")
+
+heatmap.2(lcpm[iT,], scale="row", labRow=v$genes$SYMBOL[iT], labCol=treatment, col=mycol, trace="none", density.info="none", margin=c(8,6), lhei=c(2,10), dendrogram="column")
+
+pdf("heatmaplosT.pdf")
+#volver a correr plot
+heatmap.2(lcpm[iT,], scale="row", labRow=v$genes$SYMBOL[iT], labCol=treatment, col=mycol, trace="none", density.info="none", margin=c(8,6), lhei=c(2,10), dendrogram="column")
+
+graphics.off()
+
+
+
+#        ahora que me ponga los nombres de las muestras, entonces le saco el argumento labCol
+
+
+heatmap.2(lcpm[iT,], scale="row", labRow=v$genes$SYMBOL[iT], col=mycol, trace="none", density.info="none", margin=c(8,6), lhei=c(2,10), dendrogram="column")
+
+pdf("heatmaplosTnombres.pdf")
+#volver a correr plot
+heatmap.2(lcpm[iT,], scale="row", labRow=v$genes$SYMBOL[iT], col=mycol, trace="none", density.info="none", margin=c(8,6), lhei=c(2,10), dendrogram="column")
+
+graphics.off()
+
+
+
+
+
+
+################   aca quizas puedo hacer comparando 1 por 1 aunque ya lo hice antes
+
+
+
+
+
+
+
+#    genotipos
+
+
+#ya habia hecho esto
+#los2genotipos <- topTreat(tfit, coef=1, n=Inf)
+
+los2genotipos.topgenes <- los2genotipos$GeneID[1:100]
+
+iG <- which(v$genes$GeneID %in% los2genotipos.topgenes)
+
+mycol <- colorpanel(1000,"blue","white","red")
+
+heatmap.2(lcpm[iG,], scale="row", labRow=v$genes$SYMBOL[iG], col=mycol, trace="none", density.info="none", margin=c(8,6), lhei=c(2,10), dendrogram="column")
+
+pdf("heatmaplosG.pdf")
+#volver a correr plot
+heatmap.2(lcpm[iG,], scale="row", labRow=v$genes$SYMBOL[iG], col=mycol, trace="none", density.info="none", margin=c(8,6), lhei=c(2,10), dendrogram="column")
+
+graphics.off()
+
+
+
+
+
+
+
+
+
+##########  desde toko 
+
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/heatmaplosG.pdf /home/jwohlfeiler
+
+#desde mi compu
+
+scp jwohlfeiler@toko.uncu.edu.ar:/home/jwohlfeiler/heatmaplosG.pdf /home/josefina/wisconsin/rnaseq/plots
+
+
+
+
+############desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/josefina/rnaseq/star/starfinal/heatmaplosTnombres.pdf /home/josefina/wisconsin/rnaseq/plots
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
