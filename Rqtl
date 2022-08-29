@@ -1,0 +1,572 @@
+####################################   Rqtl
+
+
+library(qtl)
+library(qtl2)
+
+map <- read.cross(format="csvr", dir="/dcdata2/home/josefina/mapping/", file="vrn3_gen.csv", na.strings=".", genotypes=c("a", "h", "b"), alleles=c("a", "b"), estimate.map=FALSE)
+
+
+#estimate.map=FALSE    Markers will be assigned dummy locations, with no attempt to estimate inter-marker distances
+
+summary(map)
+#F2 intercross
+
+    No. individuals:    239 
+
+    No. phenotypes:     1 
+    Percent phenotyped: 100 
+
+    No. chromosomes:    9 
+        Autosomes:      1 2 3 4 5 6 7 8 9 
+
+    Total markers:      14418 
+    No. markers:        1968 1790 1988 1748 1420 1903 1379 1227 995 
+    Percent genotyped:  99.7 
+    Genotypes (%):      aa:26.2  ab:49.6  bb:24.2  not bb:0.0  not aa:0.0 
+
+nind(map)
+#239
+nphe(map)
+#1
+nchr(map)
+#9
+totmar(map)
+#14418
+
+is.list(map)
+#[1] TRUE
+
+
+
+
+
+#graficar los datos faltantes
+
+plotMissing(map)
+
+pdf("missing.pdf")
+plotMissing(map)
+graphics.off()
+
+
+############desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/missing.pdf /home/josefina/wisconsin/mapping/plots/missing.pdf
+
+
+
+
+
+#ntyped        provee el numero de marcadores genotipados para cada individuo (o el numero de individuos genotipados para cada marcador)
+
+#uso de ntyped
+#ntyped(cross, what=c("ind","mar"))   #aca le digo si quiero los marcadores para cada individuo (ind) o los individuos para cada marcador (mar)
+
+#La salida es        A vector containing the number of genotypes for each individual or for each marker.
+
+
+#entonces si hago
+
+ntyped(map, "ind")
+
+#me da un vector de 239 elementos (cant de indiv) indicando cuantos marcadores posee cada individuo del 1 al 239
+
+# [1] 14418 14417 14418 14414 14418 14314 14415 14415 14418 14382 14418 14417
+ [13] 14376 14414 14292 14418 14408 14417 14418 14418 14418 14404 14418 14418
+ [25] 14415 14380 14418 14415 14418 14416 14373 14352 14417 14418 14418 14412
+ [37] 14418 14361 14397 14417 14413 14418 14408 14415 14295 14250 14418 14405
+ [49] 14275 14418 14414 14375 14418 14404 14326 14352 14418 14418 14411 14409
+ [61] 14417 14408 14417 14417 14418 14221 14417 14418 14306 14404 14418 14384
+ [73] 14412 14402 14412 14190 14408 14406 14418 14418 14283 14228 14131 14418
+ [85] 14372 14405 14337 14415 14418 14412 14297 14418 14274 14414 14379 14418
+ [97] 14408 14418 14396 14403 14380 14359 14416 14361 14390 14371 14417 14418
+[109] 14415 14417 14268 14396 14372 14336 14285 14418 14396 14411 14402 14416
+[121] 14418 14358 14418 14413 14418 14366 14418 14412 14175 14418 14414 14418
+[133] 14418 14409 14406 14125 14416 14418 14414 14416 14325 14414 14315 14412
+[145] 14418 14418 14418 14367 14418 14382 14390 14395 14415 14261 14411 14408
+[157] 14388 14415 14135 14418 14304 14418 14418 14379 14416 14308 14411 14398
+[169] 14418 14418 14413 14402 14351 14416 14416 14413 14418 14407 14326 14410
+[181] 14413 14418 14190 14392 14141 14176 14408 14418 14198 14418 14417 14370
+[193] 14312 14418 14302 14213 14417 14320 14411 14414 14289 14418 14418 14409
+[205] 14416 14418 14418 14412 14338 14303 14416 14418 14069 14330 14385 14369
+[217] 14418 14410 14411 14153 14142 14415 14418 14417 14417 14418 14115 14400
+[229] 14418 14303 14404 14355 14418 14418 14403 14397 14418 14409 14418
+
+
+length(ntyped(map, "ind"))
+#[1] 239
+length(ntyped(map, "mar"))
+#[1] 14418
+
+
+
+
+# que me de ahora los faltantes para cada individuo
+
+nmissing(map, "ind")
+# [1]   0   1   0   4   0 104   3   3   0  36   0   1  42   4 126   0  10   1
+ [19]   0   0   0  14   0   0   3  38   0   3   0   2  45  66   1   0   0   6
+ [37]   0  57  21   1   5   0  10   3 123 168   0  13 143   0   4  43   0  14
+ [55]  92  66   0   0   7   9   1  10   1   1   0 197   1   0 112  14   0  34
+ [73]   6  16   6 228  10  12   0   0 135 190 287   0  46  13  81   3   0   6
+ [91] 121   0 144   4  39   0  10   0  22  15  38  59   2  57  28  47   1   0
+[109]   3   1 150  22  46  82 133   0  22   7  16   2   0  60   0   5   0  52
+[127]   0   6 243   0   4   0   0   9  12 293   2   0   4   2  93   4 103   6
+[145]   0   0   0  51   0  36  28  23   3 157   7  10  30   3 283   0 114   0
+[163]   0  39   2 110   7  20   0   0   5  16  67   2   2   5   0  11  92   8
+[181]   5   0 228  26 277 242  10   0 220   0   1  48 106   0 116 205   1  98
+[199]   7   4 129   0   0   9   2   0   0   6  80 115   2   0 349  88  33  49
+[217]   0   8   7 265 276   3   0   1   1   0 303  18   0 115  14  63   0   0
+[235]  15  21   0   9   0
+
+#  si queremos graficar esto   uso la funcion "par" para hacer una figura con mas de un grafico y luego la funcion "plot" para graficar
+
+
+#‘las’ numeric in {0,1,2,3}; the style of axis labels.
+#          0: always parallel to the axis [_default_],
+#          1: always horizontal,
+#          2: always perpendicular to the axis,
+#          3: always vertical.
+
+
+#‘mfcol, mfrow’ A vector of the form ‘c(nr, nc)’.  Subsequent
+#          figures will be drawn in an ‘nr’-by-‘nc’ array on the device
+#          by _columns_ (‘mfcol’), or _rows_ (‘mfrow’), respectively.
+
+
+
+par(mfrow=c(1,2), las=1)
+plot(ntyped(map), ylab="No. typed markers", main="No. genotypes by individual")
+plot(ntyped(map, "mar"), ylab="No. typed individuals", main="No. genotypes by marker")
+
+
+pdf("ntyped.pdf")
+
+par(mfrow=c(1,2), las=1)
+plot(ntyped(map), ylab="No. typed markers", main="No. genotypes by individual")
+plot(ntyped(map, "mar"), ylab="No. typed individuals", main="No. genotypes by marker")
+
+graphics.off()
+
+
+############desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/ntyped-i.pdf /home/josefina/wisconsin/mapping/plots/ntyped-i.pdf
+
+
+
+
+
+
+
+
+### PARA SACARME LA DUDA HACERLO CON "IND"
+
+plot(ntyped(map, "ind"), ylab="No. typed markers", main="No. genotypes by individual")
+pdf("ntyped1.pdf")
+plot(ntyped(map, "ind"), ylab="No. typed markers", main="No. genotypes by individual")
+graphics.off()
+
+
+### Y AHORA SIN "IND" (COMO EL PRIMERO) PERO LO HAGO SOLO PARA COMPARAR BIEN
+
+plot(ntyped(map), ylab="No. typed markers", main="No. genotypes by individual")
+pdf("ntyped2.pdf")
+plot(ntyped(map), ylab="No. typed markers", main="No. genotypes by individual")
+graphics.off()
+
+####   RESULTAN SER IGUALES, POR LO TANTO, NO PONER NADA ES LO MISMO QUE PONER "IND". EL QUE CAMBIA ES CUANDO PONGO "MAR"
+
+
+
+
+
+
+########     poner los limites de y asi me muestra todos los datos
+
+par(mfrow=c(1,2), las=1)
+plot(ntyped(map), ylab="No. typed markers", main="No. genotypes by individual", ylim=c(1000,15000))
+plot(ntyped(map, "mar"), ylab="No. typed individuals", main="No. genotypes by marker", ylim=c(0,250))
+
+pdf("ntyped3.pdf")
+
+par(mfrow=c(1,2), las=1)
+plot(ntyped(map), ylab="No. typed markers", main="No. genotypes by individual", ylim=c(1000,15000))
+plot(ntyped(map, "mar"), ylab="No. typed individuals", main="No. genotypes by marker", ylim=c(0,250))
+graphics.off()
+
+
+
+
+
+##########   solo el de los individuos, acotar la region para verlo mejor
+
+plot(ntyped(map, "mar"), ylab="No. typed individuals", main="No. genotypes by marker", ylim=c(0,250), xlim=c(7000,7200))
+pdf("ntyped-i.pdf")
+plot(ntyped(map, "mar"), ylab="No. typed individuals", main="No. genotypes by marker", ylim=c(0,250), xlim=c(7000,7200))
+graphics.off()
+
+
+
+###     LOS GRAFICOS MUESTRAN QUE ESTAN BIEN LOS DATOS, NO SE OBSERVAN MUCHOS DATOS FALTANTES DE GENOTIPADO
+
+
+
+
+
+
+
+
+#####                omit the individuals with lots of missing genotype data
+
+#        se usa la funcion subset.cross()
+
+
+
+# primero explorar
+
+ntyped(map, "ind")   #es lo mismo que ntyped(map)
+#me da un vector de 239 elementos (cant de indiv) indicando cuantos marcadores posee cada individuo del 1 al 239
+
+
+#creo un objeto que me diga, de todos los ntyped(map) (es decir los individuos), cuales son mayores a 14000
+v14000 <- ntyped(map)>14000
+length(v14000)
+#239    # es el total de individuos
+head(v14000)
+#[1] TRUE TRUE TRUE TRUE TRUE TRUE
+
+# todos son mayores a 14mil    
+
+
+#####################              entonces no quiero eliminar individuos
+
+
+
+
+
+
+#####                omit the markers with lots of missing data
+
+
+# se usa la funcion     drop.markers()
+
+length(ntyped(map, "mar"))
+#[1] 14418
+
+#typed(map, "mar")
+#me da un vector de 14418 elementos (cant de marcadores) indicando cuantos individuos estan genotipados en cada marcador
+
+head(ntyped(map, "mar"), n=20)
+#1_54682  1_90261  1_97066 1_107507 1_107603 1_174010 1_194221 1_194295 
+     237      239      237      239      237      237      237      238 
+1_223588 1_223642 1_291256 1_291300 1_305415 1_351514 1_351520 1_382222 
+     238      238      237      237      239      238      238      237 
+1_396346 1_482195 1_489898 1_489908 
+     238      238      239      239 
+
+#creo el elemento de este vector
+
+nt.bymar <- ntyped(map, "mar")
+
+length(nt.bymar)
+#[1] 14418
+summary(nt.bymar)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  237.0   238.0   239.0   238.3   239.0   239.0 
+
+# el minimo es 237, es decir, como minimo hay 237 individuos genotipados en cada marcador
+
+
+length(nt.bymar[nt.bymar < 238])
+#[1] 2639
+# significa que hay 2639 marcadores con 237 individuos genotipados, y si los elimino, me quedare con marcadores genotipados en 238 y 239 individuos
+
+length(nt.bymar[nt.bymar < 239])
+#[1] 6738
+# significa que hay 6738 marcadores con 237 y 238 individuos genotipados, y si los elimino, me quedare con marcadores genotipados en 239 individuos
+
+
+#si quisiera eliminar marcadores
+
+#creo un vector que voy a eliminar, que contiene los marcadoes que estan genotipados en menos de 238 individuos, en este caso son cero
+#todrop <- names(nt.bymar[nt.bymar < 239])
+#al usar la funcion "names" me indica solo los nombres de los marcadores
+
+#y luego sobreescribe "map" eliminando los marcadores seleccionados
+#map <- drop.markers(map, todrop)
+
+#summary(map)
+
+
+################   por ahora decidi no eliminar esos marcadores ya que no serian "markers with lots of missing data", es decir, no elimine nada
+
+
+
+
+
+
+#########                 Identify duplicate individuals
+
+
+#in order to reveal pairs with unusually similar genotypes, which may indicate sample duplications or monozygotic twins. In either case, we will want to #remove one individual from each pair.
+
+#we use the function comparegeno to compare the genotypes for all pairs of individuals. The output is a matrix, whose contents are the proportions #of markers at which the pairs have matching genotypes.
+
+
+cg <- comparegeno(map)
+
+> length(cg)
+[1] 57121
+> ncol(cg)
+[1] 239
+> nrow(cg)
+[1] 239
+> dim(cg)
+[1] 239 239
+> length(dim(cg))
+[1] 2
+
+#me da una matriz 239x239 en la que compara muestra a muestra, cuyo contenido son las proporciones de marcadores en los que los pares tienen #genotipos coincidentes
+
+
+
+
+#funcion "lower.tri" Lower and Upper Triangular Part of a Matrix
+
+     #Returns a matrix of logicals the same size of a given matrix with
+     #entries ‘TRUE’ in the lower or upper triangle.
+Usage:
+     lower.tri(x, diag = FALSE)
+     upper.tri(x, diag = FALSE)     
+Arguments:
+       x: a matrix or other R object with ‘length(dim(x)) == 2’.  For
+          back compatibility reasons, when the above is not fulfilled,
+          ‘as.matrix(x)’ is called first.
+    diag: logical.  Should the diagonal be included?
+
+
+
+#########            hago el histograma
+
+
+#primero solo (hist.pdf) para entender que hace el segundo script, despues con el segundo (hist1.pdf)
+
+hist(cg[lower.tri(cg)], breaks=seq(0, 1, len=101), xlab="No. matching genotypes")
+pdf("hist.pdf")
+hist(cg[lower.tri(cg)], breaks=seq(0, 1, len=101), xlab="No. matching genotypes")
+graphics.off()
+
+
+#el segundo. Al parecer le agrega una barra debajo indicando donde hay duplicados 
+
+hist(cg[lower.tri(cg)], breaks=seq(0, 1, len=101), xlab="No. matching genotypes")
+rug(cg[lower.tri(cg)])
+pdf("hist1.pdf")
+hist(cg[lower.tri(cg)], breaks=seq(0, 1, len=101), xlab="No. matching genotypes")
+rug(cg[lower.tri(cg)])
+graphics.off()
+
+
+############desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/hist1.pdf /home/josefina/wisconsin/mapping/plots/hist1.pdf
+
+
+
+
+#there are some pairs with well over 90% matching genotypes. We may identify these pairs as follows.
+
+
+wh <- which(cg > 0.9, arr=TRUE)  #arr=TRUE es para que me de los valores creo, o los "valores" de los individuos
+
+wh
+#    row col
+#153 153 112
+#112 112 153
+
+#entiendo que solo los indiv 153 y 112 tienen mas de 90 % de matching genotypes
+
+> ncol(wh)
+[1] 2
+> nrow(wh)
+[1] 2
+
+> wh[,1]
+153 112 
+153 112 
+> wh[,2]
+153 112 
+112 153 
+> is.matrix(wh)
+[1] TRUE
+> is.array(wh)
+[1] TRUE
+
+
+
+
+wh1 <- wh[wh[,1] < wh[,2],]
+wh1
+#row col 
+#112 153 
+
+
+#We may inspect the genotype matches for this pair with the following.
+
+#funcion "pull.geno"  Pull out the genotype data from a cross object, as a single big matrix. Es decir, extrae la inf de genoma, la cual es una matriz
+
+
+g <- pull.geno(map)
+
+
+
+#ahora le pido que me muestre los valores de esa matriz que corresponden a la fila 112 columna 153 para comparar esos 2 individuos
+table(g[112,], g[153,])
+#  
+       1    2    3
+  1 3726  318    6
+  2  109 6374   90
+  3   10  231 3529
+
+#esto es cuantos marcadores son aa(1), ab(2) y bb(3)
+
+#VER BIEN QUE SIGNIFICA ESTA MATRIZ
+
+
+#si no pongo arr=TRUE, es decir FALSE, me da esto
+wh3 <- which(cg > 0.9)
+wh3
+#[1] 26682 36440
+
+#recordando con arr=TRUE
+wh
+#    row col
+#153 153 112
+#112 112 153
+
+
+#si quisiera omitir uno de los dos individuos
+
+#map <- subset(map, ind=-wh1[,2])
+
+
+
+
+
+
+
+
+
+
+#          look for duplicate markers (that is, markers with identical genotypes)
+
+
+
+
+#multiple markers with identical genotypes will invariably map to the same location, and so one might as well thin
+#out the markers so that there are no such duplicates, as the extra markers simply slow down all of our analyses.
+
+#function     findDupMarkers()    to identify markers with matching genotypes  "Identify sets of markers with identical genotype data"
+
+
+#Note that the function drop.dupmarkers() is for dropping markers
+with matching names, and considers the genotypes only in order to establish consensus
+genotypes across the multiple markers with the same name
+
+
+
+#exact.only: If TRUE, look only for markers that have matching genotypes
+          and the same pattern of missing data; if FALSE, also look for
+          cases where the observed genotypes at one marker match those
+          at another, and where the first marker has missing genotype
+          whenever the genotype for the second marker is missing.
+      
+
+dup <- findDupMarkers(map, exact.only=FALSE)
+
+str(dup)
+
+#List of 2963
+ $ 1_223588  : chr "1_223642"
+ $ 1_291256  : chr "1_291300"
+ $ 1_351514  : chr "1_351520"
+ $ 1_489898  : chr "1_489908"
+ $ 1_640678  : chr "1_640686"
+ $ 1_702893  : chr [1:3] "1_702894" "1_702896" "1_702903"
+ $ 1_705737  : chr "1_705750"
+ $ 1_775131  : chr "1_775146"
+ $ 1_1027784 : chr [1:2] "1_1027798" "1_1027842"
+ $ 1_1027865 : chr [1:3] "1_1027868" "1_1027900" "1_1027907"
+ $ 1_1027938 : chr [1:3] "1_1027956" "1_1027985" "1_1027988"
+ $ 1_1063064 : chr [1:2] "1_1063097" "1_1063107"
+  [list output truncated]
+
+
+
+dup1 <- findDupMarkers(map, exact.only=TRUE)
+str(dup1)
+#List of 2963  Al parecer me da lo mismo con TRUE o FALSE
+
+
+
+
+
+#   ahora tengo que usar    drop.dupmarkers()   para eliminarlos
+
+#Drop markers with duplicate names; retaining the first of each set, with consensus genotyps
+
+
+
+
+verbose: If TRUE, print information on the numbers of genotypes and
+          markers omitted.  If > 1, give more detailed information on
+          genotypes omitted.
+
+Value:
+
+     The input ‘cross’ object, with any duplicate markers omitted
+     (except for one).  The marker retained will have consensus
+     genotypes; if multiple versions of a marker have different
+     genotypes for an individual, they will be replaced by ‘NA’.
+
+
+map1 <- drop.dupmarkers(map, verbose=TRUE)
+#No duplicate markers.    no entiendo por que me dio eso
+#voy a tener que eliminarlos de otra manera
+
+
+
+
+#unlist(dup) creates a vector with just the names of the duplicate markers.
+
+list.dup <- unlist(dup)
+length(list.dup)
+#4031
+
+
+map.nodup <- drop.markers(map, list.dup)
+summary(map.nodup)
+
+ F2 intercross
+
+    No. individuals:    239 
+
+    No. phenotypes:     1 
+    Percent phenotyped: 100 
+
+    No. chromosomes:    9 
+        Autosomes:      1 2 3 4 5 6 7 8 9 
+
+    Total markers:      10387 
+    No. markers:        1443 1307 1388 1229 1018 1387 1010 908 697 
+    Percent genotyped:  99.7 
+    Genotypes (%):      aa:26.1  ab:49.7  bb:24.1  not bb:0.0  not aa:0.0 
+
+
+#efectivamente elimino los 4031 marcadores
+
+
+
+#                           entonces ahora sigo con      map.nodup
+
+
+
