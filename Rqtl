@@ -570,3 +570,422 @@ summary(map.nodup)
 
 
 
+
+#                 Look for markers with distorted segregation patterns
+
+# existe un mecanismo que hace que pueda haber una transmision desigual de alelos parentales, de los padres a la descendencia
+
+#We expect the genotypes to appear with the frequencies 1:2:1. Moderate departures from these frequencies are not unusual and may indicate the #presence of partially lethal alleles. Gross departures from these frequencies often indicate problematic markers that should be omitted
+
+
+# use the function geno.table() to inspect the segregation patterns
+
+#It calculates the genotype frequencies and also a P-value for a test of departure from the 1:2:1 expected ratios. We will focus on those
+#markers that show significant distortion at the 5% level, after a Bonferroni correction for the multiple tests.
+
+gt <- geno.table(map.nodup)
+
+head(gt)
+#        chr missing aa  ab bb not.bb not.aa P.value
+1_54682    1       2 44 114 79      0      0 0.00480
+1_90261    1       0 77 111 51      0      0 0.03229
+1_97066    1       2 84  93 60      0      0 0.00036
+1_107507   1       0 75 116 48      0      0 0.04274
+1_107603   1       2 83  94 60      0      0 0.00068
+1_174010   1       2 85 100 52      0      0 0.00056
+
+
+
+pvalue5 <- gt$P.value < 0.05
+
+head(pvalue5)
+#[1] TRUE TRUE TRUE TRUE TRUE TRUE
+
+summary(pvalue5)
+   Mode   FALSE    TRUE 
+logical    4981    5406 
+
+
+
+#gt1 es un filtrado de gt (pasa de 10387 marcadores a 1348), hace la correccion de Bonferroni y se queda con muchos menos
+#la correccion consiste en dividir alfa por m(el numero de hipotesis), en este caso el total de marcadores.
+
+
+
+gt1 <- gt[gt$P.value < 0.05/totmar(map.nodup),]
+
+head(gt1)
+
+          chr missing  aa  ab bb not.bb not.aa  P.value
+1_724795    1       0  90 139 10      0      0 9.74e-14
+1_724827    1       0  60 179  0      0      0 3.91e-20
+1_1169031   1       1  95 101 42      0      0 4.92e-07
+1_1211466   1       2 112  86 39      0      0 2.31e-14
+1_1550441   1       1 100  99 39      0      0 5.63e-09
+1_1889363   1       2  93  98 46      0      0 2.58e-06
+
+
+
+> nrow(gt)
+[1] 10387
+> nrow(gt1)
+[1] 1348
+
+
+
+pvalue51 <- gt1$P.value < 0.05
+summary(pvalue51)
+#  Mode    TRUE 
+logical    1348 
+
+#con este filtro de gt a gt1 quedan todos menores a 0.05
+
+
+
+
+pvalue.malo <- gt$P.value > 0.05
+summary(pvalue.malo)
+#   Mode   FALSE    TRUE 
+logical    5406    4981 
+
+
+
+pvalue.malo1 <- gt1$P.value > 0.05
+summary(pvalue.malo1)
+#   Mode   FALSE 
+logical    1348 
+
+#vuelvo a confirmar que #con este filtro de gt a gt1 quedan todos menores a 0.05
+
+
+
+
+
+###########################  aca no entiendo por que decide eliminar los de p-value menor a 1e-10
+
+#leer correccion de Bonferroni
+
+
+##################     CONSULTAR CON ANDRES ANTES DE ELIMINARLOS, ya lo hice pero le puse otro nombre  map.nodup.nodis
+
+
+
+
+#para ver cuantos marcadores serian
+
+
+todrop <- rownames(gt[gt$P.value < 1e-10,])
+> length(todrop)
+#[1] 972
+# o sea que en el siguiente paso eliminaria 972 marcadores
+
+
+map.nodup.nodis <- drop.markers(map.nodup, todrop)
+
+
+summary(map.nodup.nodis)
+    F2 intercross
+
+    No. individuals:    239 
+
+    No. phenotypes:     1 
+    Percent phenotyped: 100 
+
+    No. chromosomes:    9 
+        Autosomes:      1 2 3 4 5 6 7 8 9 
+
+    Total markers:      9415 
+    No. markers:        1310 1201 1254 1147 928 1289 914 806 566 
+    Percent genotyped:  99.7 
+    Genotypes (%):      aa:26.3  ab:47.9  bb:25.8  not bb:0.0  not aa:0.0 
+
+
+
+
+#                Study individuals’ genotype frequencies
+
+
+#Just as we expect the markers to segregate 1:2:1, we expect the individuals to have genotype frequencies that are in approximately those proportions.
+
+
+
+
+#esto ya lo habia hecho
+#g <- pull.geno(map)
+
+#pero lo hago con map filtrado hasta ahora    map.nodup.nodis
+
+
+g1 <- pull.geno(map.nodup.nodis)
+
+
+gfreq <- apply(g1, 1, function(a) table(factor(a, levels=1:3)))
+gfreq <- t(t(gfreq) / colSums(gfreq))
+
+par(mfrow=c(1,3), las=1)
+for(i in 1:3) plot(gfreq[i,], ylab="Genotype frequency", main=c("AA", "AB", "BB")[i], ylim=c(0,1))
+
+pdf("geno-fr-by-ind.pdf")
+
+par(mfrow=c(1,3), las=1)
+for(i in 1:3) plot(gfreq[i,], ylab="Genotype frequency", main=c("AA", "AB", "BB")[i], ylim=c(0,1))
+
+graphics.off()
+
+
+
+############desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/geno-fr-by-ind.pdf /home/josefina/wisconsin/mapping/plots/geno-fr-by-ind.pdf
+
+
+# el grafico se ve bien
+
+
+
+
+
+
+
+#####################    antes de seguir con el tutorial que estoy usando,  aca debo ELIMINAR LOS MARCADORES REDUNDANTES
+
+# pero voy a cambiar de directorio en R asi no se me hace lio, dentro de mapping    mapping1
+
+
+# el ultimo cross file es         map.nodup.nodis
+
+
+#  entonces primero voy a copiar los files que necesito en otro espacio de trabajo de R
+
+#necesito map.nodup.nodis
+
+#desde
+
+dcdata2/home/josefina/mapping
+
+R
+
+saveRDS(map.nodup.nodis, "map.nodup.nodis.rds")
+
+
+
+# y desde aca
+
+dcdata2/home/josefina/mapping/mapping1
+
+#voy a R
+
+map.nodup.nodis1 <- readRDS("/dcdata2/home/josefina/mapping/map.nodup.nodis.rds")
+
+# y ahi me queda copiado en este directorio con el nombre    map.nodup.nodis1
+
+
+#######################
+
+
+# una opcion es usar la funcion jittermap, aunque esa funcion no elimina los marcadores redundantes, solo corre los que se solapan
+
+# usar la funcion find_bins() del paquete onemap     	NO SE PUEDE, NO ES COMPATIBLE CON LA CLASE CROSS
+library(onemap)
+map.nodup.nodis1.binT <- find_bins(map.nodup.nodis1, exact=TRUE) 
+#Error in find_bins(map.nodup.nodis1, exact = TRUE) : map.nodup.nodis1 is not an object of class 'onemap'
+
+##################################################################################   funcion reduce_markers() del paquete qtl2
+
+reduce_markers              package:qtl2               R Documentation
+
+Reduce markers to a subset of more-evenly-spaced ones
+
+Description:
+
+     Find the largest subset of markers such that no two adjacent
+     markers are separated by less than some distance.
+
+Usage:
+
+     reduce_markers(
+       map,
+       min_distance = 1,
+       weights = NULL,
+       max_batch = 10000,
+       batch_distance_mult = 1,
+       cores = 1
+     )
+     
+Arguments:
+
+     map: A list with each component being a vector with the marker
+          positions for a chromosome.
+
+min_distance: Minimum distance between markers.
+
+ weights: A (optional) list of weights on the markers; same size as
+          ‘map’.
+
+max_batch: Maximum number of markers to consider in a batch
+
+batch_distance_mult: If working with batches of markers, reduce
+          ‘min_distance’ by this multiple.
+
+cores: Number of CPU cores to use, for parallel calculations. (If
+          ‘0’, use ‘parallel::detectCores()’.) Alternatively, this can
+          be links to a set of cluster sockets, as produced by
+          ‘parallel::makeCluster()’.
+
+Details:
+
+     Uses a dynamic programming algorithm to find, for each chromosome,
+     the subset of markers for with max(‘weights’) is maximal, subject
+     to the constraint that no two adjacent markers may be separated by
+     more than ‘min_distance’.
+
+     The computation time for the algorithm grows with like the square
+     of the number of markers, like 1 sec for 10k markers but 30 sec
+     for 50k markers. If the number of markers on a chromosome is
+     greater than ‘max_batch’, the markers are split into batches and
+     the algorithm applied to each batch with min_distance smaller by a
+     factor ‘min_distance_mult’, and then merged together for one last
+     pass.
+
+Value:
+
+     A list like the input ‘map’, but with the selected subset of
+     markers.
+
+Examples:
+
+     # read data
+     grav2 <- read_cross2(system.file("extdata", "grav2.zip", package="qtl2"))
+     
+     # grab genetic map
+     gmap <- grav2$gmap
+     
+     # subset to markers that are >= 1 cM apart
+     gmap_sub <- reduce_markers(gmap, 1)
+     
+     # drop all of the other markers from the cross
+     markers2keep <- unlist(lapply(gmap_sub, names))
+     grav2_sub <- pull_markers(grav2, markers2keep)
+
+
+###########################################################
+library(qtl2)
+
+# primero      Convert a cross object from the R/qtl format to the R/qtl2 format 
+
+map.nodup.nodis2 <- convert2cross2(map.nodup.nodis1)
+
+
+# grab genetic map
+gmap <- map.nodup.nodis2$gmap
+
+
+# subset to markers that are >= 0.1 cM apart
+
+
+
+gmap_sub <- reduce_markers(gmap, 0.1, cores=15)
+ummary(gmap_sub)
+  Length Class  Mode   
+1 377    -none- numeric
+2 331    -none- numeric
+3 360    -none- numeric
+4 296    -none- numeric
+5 271    -none- numeric
+6 331    -none- numeric
+7 247    -none- numeric
+8 247    -none- numeric
+9 179    -none- numeric
+
+
+
+
+# solo para probar lo hice con 1 cM
+gmap_sub1cM <- reduce_markers(gmap, 1, cores=15)
+> summary(gmap_sub1cM)
+  Length Class  Mode   
+1 83     -none- numeric
+2 71     -none- numeric
+3 80     -none- numeric
+4 58     -none- numeric
+5 64     -none- numeric
+6 62     -none- numeric
+7 56     -none- numeric
+8 52     -none- numeric
+9 50     -none- numeric
+# y efectivamente me dio tandas de muchos menos marcadores 
+
+
+
+
+#        drop all of the other markers from the cross
+
+
+#le aplico la funcion "names" a todos los elementos de "gmap_sub" o sea me quedo solo con los nombres de los marcadores
+
+names <- lapply(gmap_sub, names)
+
+
+# creo el objeto con los marcadores que quiero dejar
+markers2keep <- unlist(names)
+
+
+
+#o los dos pasos juntos
+markers2keep <- unlist(lapply(gmap_sub, names))
+
+length(markers2keep)
+#[1] 2639   es el total de marcadores co el que me voy a quedar
+
+
+
+#            dejo solo los marcadores que seleccione en mi objeto cross
+
+#funcion pull_markers()     Drop all but a selected set of markers from the data matrices and genetic maps
+
+map.nodup.nodis2.nr <- pull_markers(map.nodup.nodis2, markers2keep)
+
+
+summary(map.nodup.nodis2.nr)
+
+Object of class cross2 (crosstype "f2")
+
+Total individuals             239
+No. genotyped individuals     239
+No. phenotyped individuals    239
+No. with both geno & pheno    239
+
+No. phenotypes                  1
+No. covariates                  0
+No. phenotype covariates        0
+
+No. chromosomes                 9
+Total markers                2639
+
+No. markers by chr:
+  1   2   3   4   5   6   7   8   9 
+377 331 360 296 271 331 247 247 179 
+
+
+
+
+##########################     sigue en scripts-mapping2
+
+
+#  Study pairwise marker linkages; look for switched alleles    
+     
+#  usar              map.nodup.nodis2.nr
+
+
+
+
+     
+     
+     
+     
+     
+     
+     
+     
+     
+
+
