@@ -968,12 +968,511 @@ No. markers by chr:
 
 
 
-##########################     sigue en scripts-mapping2
+##########################  scripts-mapping2
 
 
-#  Study pairwise marker linkages; look for switched alleles    
      
 #  usar              map.nodup.nodis2.nr
+
+#  estoy en /mapping/mapping1
+
+
+
+#  Study pairwise marker linkages; look for switched alleles
+
+
+#Function est.rf() is used to estimate the recombination fraction between each pair and to calculate a LOD score for a test of rf =1/2.
+
+#The function markerlrt() behaves just like est.rf(), but uses a general likelihood ratio test in place of the usual test of pairwise linkage.
+
+map.nodup.nodis2.nr.rf <- est.rf(map.nodup.nodis2.nr)
+
+#Error in est.rf(map.nodup.nodis2.nr) : Input should have class "cross".
+
+class(map.nodup.nodis2.nr)
+#[1] "cross2"
+
+
+
+###############################################################
+
+
+#### para solucionar esto voy a volver un par de pasos atras  (vuelvo a usar   map.nodup.nodis1   que es un objeto clase "cross"  no "cross2" es #decir antes de convertirlo a cross2
+
+#corroboro
+class(map.nodup.nodis1)
+#[1] "f2"    "cross"
+
+
+
+# yo ya tenia este vector        markers2keep        que es el de los marcadores con los que me quiero quedar
+
+length(markers2keep)
+#[1] 2639   es el total de marcadores con el que me voy a quedar
+
+
+
+#ahora esto es del paquete qtl
+#funcion pull.markers()  (en vez de pull_markers() de qtl2)   Drop all but a selected set of markers
+
+
+map.nodup.nodis1.nr <- pull.markers(map.nodup.nodis1, markers2keep)
+
+summary(map.nodup.nodis1.nr)
+    F2 intercross
+
+    No. individuals:    239 
+
+    No. phenotypes:     1 
+    Percent phenotyped: 100 
+
+    No. chromosomes:    9 
+        Autosomes:      1 2 3 4 5 6 7 8 9 
+
+    Total markers:      2639 
+    No. markers:        377 331 360 296 271 331 247 247 179 
+    Percent genotyped:  99.7 
+    Genotypes (%):      aa:26.4  ab:47.8  bb:25.9  not bb:0.0  not aa:0.0 
+
+
+# y me quedo igual que map.nodup.nodis2.nr
+
+
+
+################################################
+
+
+
+#      ahora si vuelvo a hacer
+
+
+
+
+
+#  Study pairwise marker linkages; look for switched alleles
+
+
+#Function est.rf() is used to estimate the recombination fraction between each pair and to calculate a LOD score for a test of rf =1/2.
+
+#The function markerlrt() behaves just like est.rf(), but uses a general likelihood ratio test in place of the usual test of pairwise linkage.
+
+map.nodup.nodis1.nr.rf <- est.rf(map.nodup.nodis1.nr)
+
+#Warning message:
+In est.rf(map.nodup.nodis1.nr) : Alleles potentially switched at markers 
+  1_54682 1_1228868 1_1485686 1_2598157 1_3554242 1_4689255 1_4993102 1_5099460 1_5452277 1_6569541 1_10143597 1_13209811 1_14180579 1_17309585 1_19226397 1_21979612 1_26378550 1_27459910 1_29165268 1_29699040 1_30674855 1_31047184 1_33380948 1_35685924 1_37041227 1_40323866 1_40614535 1_41410063 1_41612219 1_41669507 1_41776405 1_41882580 1_44286410 1_46974763 1_47535587 1_47603308 1_47862426 1_49063856 1_49215100 1_50352339 1_50700802 1_50767990 2_545381 2_663041 2_1020906 2_2221466 2_2378676 2_7337605 2_8277582 2_8609905 2_10944474 2_13621573 2_15153177 2_15463572 2_16899764 2_17622085 2_18900845 2_21943297 2_22546616 2_25113913 2_26641930 2_28305320 2_28764440 2_31659372 2_31873620 2_34024801 2_35407073 2_40387120 2_41412987 2_41469834 2_42589735 2_42721983 2_42962689 2_43581898 2_43750700 2_43824367 3_96026 3_413905 3_470906 3_789273 3_938924 3_1650094 3_2298345 3_2402300 3_2705038 3_6567451 3_6891916 3_7096280 3_7159772 3_7431959 3_1065717 [... truncated]
+
+
+#there are numerous markers with likely switched alleles (A ↔ B). 
+
+#This is indicated through pairs of markers that are strongly indicated to be associated but have estimated recombination fractions >>1/2. The #check-Alleles() function gives more detailed information on this issue.
+
+
+#For each marker, we compare the maximum LOD score for the cases
+#     where the estimated recombination fraction > 0.5 to those where
+#     r.f. < 0.5.  The function ‘est.rf’ must first be run
+
+
+
+#la salida da lo siguiente:
+#A data frame containing the flagged markers, having four columns:
+#     the marker name, chromosome ID, numeric index within chromosome,
+#     and the difference between the maximum two-point LOD score with
+#     the alleles switched to that from the original data.
+
+
+#The final column in the output for a marker, diff.in.max.LOD, is the difference between the maximum LOD score for the cases where the estimated #recombination fraction is > 1/2 and the maximum LOD score for the cases where the estimated recombination fraction is < 1/2.
+
+#There are a large number of markers that are tightly associated with other markers, but with recombination fractions well above 1/2, which #indicates that some markers likely have their alleles switched.
+
+
+check.alleles <- checkAlleles(map.nodup.nodis1.nr.rf, threshold=5)
+nrow(check.alleles)
+# 304 la cantidad de marcadores con los alelos posiblemente cambiados
+
+#recordar que por ahora tengo    Total markers:      2639
+
+
+
+
+#                para visualizarlos
+
+#A plot of the LOD scores against the estimated recombination fractions for all marker pairs
+
+#function pull.rf() to pull out the recombination fractions and LOD scores as matrices
+
+
+rf <- pull.rf(map.nodup.nodis1.nr.rf)
+#me da una matriz con todos los rf comparando marcador por marcador
+
+lod <- pull.rf(map.nodup.nodis1.nr.rf, what="lod")
+#me da una matriz con todos los LOD scores comparando marcador por marcador
+
+> length(rf)
+[1] 6964321
+> length(lod)
+[1] 6964321
+ 
+# lo anterior tiene sentido porque son matrices de 2639 x 2639
+
+
+plot(as.numeric(rf), as.numeric(lod), xlab="Recombination fraction", ylab="LOD score")
+pdf("LOD-vs-rf.pdf")
+plot(as.numeric(rf), as.numeric(lod), xlab="Recombination fraction", ylab="LOD score")
+graphics.off()
+#esto demoro un poquito
+
+
+############desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/mapping1/LOD-vs-rf.pdf /home/josefina/wisconsin/mapping/plots1/LOD-vs-rf.pdf
+
+
+#como es muy pesado para abrir en la compu
+#desde toko para visualizar
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/mapping1/LOD-vs-rf.pdf /home/jwohlfeiler/LOD-vs-rf.pdf
+display LOD-vs-rf.pdf
+
+
+# entonces vemos en el grafico que muchos pares de maracdores con LOD scores altos y frecuencias de recombinacion mayores a 1/2
+
+#es decir, no deberia ser una parabola, sino una curva decreciente
+
+
+#One solution to this problem is to form initial linkage groups, ensuring that markers with rf > 1/2 are placed in different groups. If all goes #well, each chromosome will come out as a pair of linkage groups: one containing markers with correct alleles and another containing markers with #switched alleles.
+
+
+#  formLinkageGroups() to infer linkage groups. It uses the pairwise linkage results from est.rf()
+
+
+# The function has two main arguments: max.rf and min.lod
+
+#Two markers will be placed in the same linkage groups if they have estimated recombination fraction ≤ max.rf and LOD score ≥ min.lod.
+
+#The linkage groups are closed via the transitive property. That is, if markers a and b are linked and markers b and c are linked, then all three #are placed in the same linkage group.
+
+
+
+lg <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.35, min.lod=6)
+table(lg[,2])
+#  1   2   3   4   5   6   7   8   9  10  11  12  13  14 
+590 413 196 191 154 154 152 142 139 130 103 102  94  79 
+
+
+
+#The output of formLinkageGroups() is a matrix with two columns: the initial linkage group
+#or chromosome for each marker, and then the assigned linkage group, as inferred from the
+#pairwise linkage information.
+
+
+
+#tengo que seguir jugando con los parametros. deberian darme 18 grupos de ligamiento
+#(since there are 9 chromosomes but each will likely be split in two due to the allele switching problem)
+
+
+lg1 <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.35, min.lod=7)
+table(lg1[,2])
+#lo mismo que lg
+
+lg2 <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.35, min.lod=8)
+table(lg2[,2])
+# 1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17 
+248 221 206 196 192 191 154 154 152 142 139 136 130 103 102  94  79 
+
+
+lg3 <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.35, min.lod=9)
+table(lg3[,2])
+#lo mismo que lg2
+
+
+lg4 <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.35, min.lod=10)
+table(lg4[,2])
+#lo mismo que lg2 y lg3
+
+
+
+# probar bajar rf a 0.25
+lg5 <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.25, min.lod=8)
+table(lg5[,2])
+#  1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
+221 205 196 192 191 154 154 152 142 140 139 135 130 108 103 102  94  79   1   1 
+
+
+lg6 <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.30, min.lod=8)
+table(lg6[,2])
+#  1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17 
+248 221 206 196 192 191 154 154 152 142 139 136 130 103 102  94  79 
+
+
+#entonces probar rf=0.25 y lod=10
+lg7 <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.25, min.lod=10)
+table(lg7[,2])
+#igual que lg5
+
+
+
+###########   elijo lg5    max rf=0.25, min lod=8
+
+###  reorganizar marcadores
+
+#Since we are happy with the results, we can reorganize the markers into these inferred linkage groups. 
+#We do so with the same function, formLinkageGroups(), via the argument reorgMarkers.
+
+
+map.nodup.nodis1.nr.rf.reor <- formLinkageGroups(map.nodup.nodis1.nr.rf, max.rf=0.25, min.lod=8, reorgMarkers=TRUE)
+
+summary(map.nodup.nodis1.nr.rf.reor)
+#   F2 intercross
+
+    No. individuals:    239 
+
+    No. phenotypes:     1 
+    Percent phenotyped: 100 
+
+    No. chromosomes:    20 
+        Autosomes:      1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 
+
+    Total markers:      2639 
+    No. markers:        221 205 196 192 191 154 154 152 142 140 139 135 130 108 
+                        103 102 94 79 1 1 
+    Percent genotyped:  99.7 
+    Genotypes (%):      aa:26.4  ab:47.8  bb:25.9  not bb:0.0  not aa:0.0 
+Warning message:
+In summary.cross(map.nodup.nodis1.nr.rf.reor) :
+  Some chromosomes > 1000 cM in length; there may be a problem with the genetic map.
+  (Perhaps it is in basepairs?)
+
+#              PENSAR SI ESE WARNING MESSAGE TIENE SENTIDO PARA ESTO DE LOS 20 GRUPOS DE LIGAMIENTO
+
+
+
+#  ahora visualizo los datos para ver que marcadores comparten el mismo grupo de ligamiento
+
+
+#          A plot of the pairwise recombination fractions and LOD scores
+
+
+#el argumento alternate.chrid: If TRUE and more than one chromosome is plotted,
+          #alternate the placement of chromosome axis labels, so that
+          #they may be more easily distinguished.
+
+plotRF(map.nodup.nodis1.nr.rf.reor, alternate.chrid=TRUE)
+pdf("est-rf-and-lod.pdf")
+plotRF(map.nodup.nodis1.nr.rf.reor, alternate.chrid=TRUE)
+graphics.off()
+
+
+############desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/mapping1/est-rf-and-lod.pdf /home/josefina/wisconsin/mapping/plots1/est-rf-and-lod.pdf
+
+#como es muy pesado para abrir en la compu
+#desde toko para visualizar
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/mapping1/est-rf-and-lod.pdf /home/jwohlfeiler/est-rf-and-lod.pdf
+display est-rf-and-lod.pdf
+
+
+
+
+############################################################################################################## hice hasta aca
+
+#esto es del tutorial, yo tengo que ver mi grafico para ver cuales grupos de marcadores estan en el mismo cromosoma
+#linkage groups 
+1 and 6
+2 and 7
+3 and 12
+4 and 14
+5 and 11
+8 and 17
+9 and 16
+10 and 13
+18 and 15
+are associated with each other, in that they have large LOD scores but their recombinationfractions are not small (the upper-left rectangle for groups 1 and 6 is strongly blue).
+
+#I would infer from this that these markers belong to the same chromosome, but the alleles in one or the other group are switched.
+
+
+
+#We can look at this more clearly by picking out a marker from one group and studying the recombination fractions and LOD scores for that marker against all others.
+
+#elijo el tercer marcador del grupo de ligamiento 4
+
+
+#ya habia hecho esto   rf <- pull.rf(map.nodup.nodis1.nr.rf)   y    lod <- pull.rf(map.nodup.nodis1.nr.rf, what="lod")
+#ahora lo hago de nuevo con los datos actualizados
+
+rf1 <- pull.rf(map.nodup.nodis1.nr.rf.reor)
+
+lod1 <- pull.rf(map.nodup.nodis1.nr.rf.reor, what="lod")
+
+mn4 <- markernames(map.nodup.nodis1.nr.rf.reor, chr=4)
+
+
+par(mfrow=c(2,1))
+plot(rf1, mn4[3], bandcol="gray70", ylim=c(0,1), alternate.chrid=TRUE)
+abline(h=0.5, lty=2)
+plot(lod1, mn4[3], bandcol="gray70", alternate.chrid=TRUE)
+
+pdf("est-rf-and-lod-mn4.pdf")
+
+par(mfrow=c(2,1))
+plot(rf1, mn4[3], bandcol="gray70", ylim=c(0,1), alternate.chrid=TRUE)
+abline(h=0.5, lty=2)
+plot(lod1, mn4[3], bandcol="gray70", alternate.chrid=TRUE)
+
+graphics.off()
+
+############desde mi compu
+scp -P 7262 josefina@carrot.vcru.wisc.edu:/dcdata2/home/josefina/mapping/mapping1/est-rf-and-lod-mn4.pdf /home/josefina/wisconsin/mapping/plots1/est-rf-and-lod-mn4.pdf
+
+
+# se ve claramente que el tercer marcador del cr 4 tiene frec de recombinac menor a 1/2 con respecto a los demas marcadores del cr 4, y mayores a #1/2 con respecto a los marcadores del cr 14 (como habia visto en el grafico).
+
+#podemos ver el problema tambien inspeccionando tablas de two-locus genotypes, producidas por la funcion    geno.crosstab()
+
+# esta funcion da la salida
+#A matrix containing the number of individuals having each possible
+#     pair of genotypes.  Genotypes for the first marker are in the
+#     rows; genotypes for the second marker are in the columns
+
+
+geno.crosstab(map.nodup.nodis1.nr.rf.reor, mn4[3], mn4[11])
+#         4_5744521
+4_2002113  - aa ab bb
+       -   0  0  0  0
+       aa  0 43 21  0
+       ab  1  6 95 12
+       bb  0  1 20 40
+
+mn14 <- markernames(map.nodup.nodis1.nr.rf.reor, chr=14)
+geno.crosstab(map.nodup.nodis1.nr.rf.reor, mn4[3], mn14[11])
+#        4_7376003
+4_2002113  - aa ab bb
+       -   0  0  0  0
+       aa  0  1 21 42
+       ab  0 18 79 17
+       bb  1 37 19  4
+
+#it is clear that, if the genotypes for 4_2002113 are correct, then the A and B alleles for 4_7376003 are switched
+# ver de nuevo esto, no entiendo bien la matriz
+
+#we will simply trust that the alleles need to be switched for all of the markers on linkage
+#groups 6,7,11-14, 16-18, The function switchAlleles() is convenient for performing the allele switching.
+
+
+toswitch <- markernames(map.nodup.nodis1.nr.rf.reor, chr=c(6,7,11:14,16:18))
+
+map.nodup.nodis1.nr.rf.reor.sw <- switchAlleles(map.nodup.nodis1.nr.rf.reor, toswitch)
+
+
+
+
+# entonces ahora el plot of recombination fractions and LOD scores va a ser diferente
+
+
+
+####  primero tenemos que volver a aplicar la funcion est.rf() despues de haber switched los alelos
+
+
+map.nodup.nodis1.nr.rf.reor.sw.rf <- est.rf(map.nodup.nodis1.nr.rf.reor.sw)
+#Warning message:
+In est.rf(map.nodup.nodis1.nr.rf.reor.sw) :
+  Alleles potentially switched at markers 
+  1_51418423
+
+
+plotRF(map.nodup.nodis1.nr.rf.reor.sw.rf, alternate.chrid=TRUE)
+pdf("est-rf-and-lod-sw.pdf")
+plotRF(map.nodup.nodis1.nr.rf.reor.sw.rf, alternate.chrid=TRUE)
+graphics.off()
+
+#lo visualizo en Rstudio porque es pesado
+
+
+
+
+## rehacer el grafico de LOD scores versus recombination fractions for all pairs   todavia no lo hagp
+
+rf2 <- pull.rf(map.nodup.nodis1.nr.rf.reor.sw.rf)
+lod2 <- pull.rf(map.nodup.nodis1.nr.rf.reor.sw.rf, what="lod")
+
+plot(as.numeric(rf2), as.numeric(lod2), xlab="Recombination fraction", ylab="LOD score")
+pdf("LOD-vs-rf-sw.pdf")
+plot(as.numeric(rf2), as.numeric(lod2), xlab="Recombination fraction", ylab="LOD score")
+graphics.off()
+
+#vemos en este grafico que no hay frecuencias de recombinacion mayores a 1/2, y mientras mayor es la fr, menor es el lod score (que indica # menor ligamiento)
+
+
+
+
+
+
+
+#                          Form linkage groups
+
+
+
+#First, we again attempt to infer the linkage groups, with the hope that we’ll come away with exactly 9.
+
+
+lg8 <- formLinkageGroups(map.nodup.nodis1.nr.rf.reor.sw.rf, max.rf=0.35, min.lod=6)
+table(lg8[,2])
+# 1   2   3   4   5   6   7   8 
+675 361 331 330 270 246 244 182 
+
+lg9 <- formLinkageGroups(map.nodup.nodis1.nr.rf.reor.sw.rf, max.rf=0.35, min.lod=8)
+table(lg9[,2])
+#  1   2   3   4   5   6   7   8   9  10 
+375 360 331 330 300 270 246 244 182   1 
+
+
+lg10 <- formLinkageGroups(map.nodup.nodis1.nr.rf.reor.sw.rf, max.rf=0.35, min.lod=9)
+table(lg10[,2])
+#igual que lg9
+
+lg11 <- formLinkageGroups(map.nodup.nodis1.nr.rf.reor.sw.rf, max.rf=0.35, min.lod=10)
+table(lg11[,2])
+#igual que lg9 y lg10
+
+
+
+#elijo lg10    max.rf=0.35, min.lod=9
+
+
+
+#Right; we’ve got 9 groups.   Now we reorganize the markers again.
+
+map.nodup.nodis1.nr.rf.reor.sw.rf.lg <- formLinkageGroups(map.nodup.nodis1.nr.rf.reor.sw.rf, max.rf=0.35, min.lod=9, reorgMarkers=TRUE)
+
+#It is useful to plot the pairwise recombination fractions and LOD scores again
+
+plotRF(map.nodup.nodis1.nr.rf.reor.sw.rf.lg)
+pdf("lod-vs-rf-nosw.pdf")
+plotRF(map.nodup.nodis1.nr.rf.reor.sw.rf.lg)
+graphics.off()
+
+
+#vemos en el grafico que we have 9 clear linkage groups, with markers within a group linked to one another, and markers in distinct groups showing #no evidence of linkage
+
+
+
+
+################   sigue en scripts-mapping3
+
+
+
+
+
+
+#################                       ordenar los marcadores cromosoma por cromosoma
+
+
+
+
+
+
+
+
+
 
 
 
