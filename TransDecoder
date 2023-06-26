@@ -1,0 +1,53 @@
+#######   TransDecoder
+
+mkdir transdecoder
+cd transdecoder
+
+TransDecoder.LongOrfs -S -t ../sinanotar.fasta
+
+
+* [Tue Jun 13 19:25:21 2023] Running CMD: /usr/local/bin/TransDecoder-TransDecoder-v5.7.0/util/compute_base_probs.pl sinanotar.fasta 0 > /dcdata2/josefina/rnaseq/star/starstringTie/gffcompare/sinanotar.fasta.transdecoder_dir/base_freqs.dat
+
+
+-first extracting base frequencies, we'll need them later.
+
+
+- extracting ORFs from transcripts.
+-total transcripts to examine: 43080
+[43000/43080] = 99.81% done    CMD: touch /dcdata2/josefina/rnaseq/star/starstringTie/gffcompare/sinanotar.fasta.transdecoder_dir/__checkpoints_longorfs/TD.longorfs.ok
+
+
+#################################
+### Done preparing long ORFs.  ###
+##################################
+
+        Use file: /dcdata2/josefina/rnaseq/star/starstringTie/gffcompare/sinanotar.fasta.transdecoder_dir/longest_orfs.pep  for Pfam and/or BlastP searches to enable homology-based coding region identification.
+	
+        Then, run TransDecoder.Predict for your final coding region predictions.
+
+
+#### el output de esta corrida es
+
+#base_freqs.dat
+#__checkpoints_longorfs
+#longest_orfs.cds
+#longest_orfs.gff3
+#longest_orfs.pep
+
+
+
+# correr BlastP
+
+mkdir blastP
+cd blastP
+
+blastp -query ../transdecoder/sinanotar.fasta.transdecoder_dir/longest_orfs.pep  \
+    -db ../../../../../../../../vcru_share_s/blastdbs/uniprot_sprot_trembl_viridiplantae  -max_target_seqs 1 \
+    -outfmt 6 -evalue 1e-5 -num_threads 10 > blastp.outfmt6
+
+
+
+
+#TransDecoder.Predict -t sinanotar.fasta
+#esto no lo hice
+#en lugar de esto correr cpc2 
