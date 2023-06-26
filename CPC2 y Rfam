@@ -1,0 +1,55 @@
+#####  CPC2 Coding Potential Calculator
+
+cd gffcompare
+
+mkdir cpc2
+
+cd cpc2
+
+CPC2.py -i ../sinanotar.fasta -o cpc2.txt
+
+[INFO] read file '../sinanotar.fasta'
+[INFO] Predicting coding potential, please wait ...
+[INFO] Running Done!
+[INFO] cost time: 71s
+
+
+
+###################################  Rfam
+
+cd starstringTie
+
+####### descargar base de datos
+
+wget eddylab.org/infernal/infernal-1.1.2.tar.gz
+tar xf infernal-1.1.2.tar.gz
+cd infernal-1.1.2
+
+wget -c https://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/Rfam.cm.gz
+wget -c https://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/Rfam.clanin
+#gunzipear primero
+gunzip Rfam.cm.gz
+#comprimir e indexar
+cmpress Rfam.cm
+
+#calcular z
+
+esl-seqstat ../gffcompare/sinanotar.fasta
+
+Format:              FASTA
+Alphabet type:       DNA
+Number of sequences: 43080
+Total # residues:    49427959
+Smallest:            200
+Largest:             29571
+Average length:      1147.4
+
+49427959 * 2 = 98855918.    98855918 / 1000000 = 98.855918
+
+
+98.855918 es el total database size is the number of nucleotides that will be searched, in units of megabases
+
+
+# ahora si correr 
+
+cmscan -Z 98.855918 --cut_ga --rfam --nohmmonly --tblout dcar-genome.tblout --fmt 2 --clanin Rfam.clanin Rfam.cm ../gffcompare/sinanotar.fasta > dcar-genome.cmscan
