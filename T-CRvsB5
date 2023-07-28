@@ -1,0 +1,281 @@
+#####  T (testigo) - Criolla vs B5 
+
+#  featureCounts program is designed to assign mapped reads or fragments (paired-end data) to genomic features such as genes, exons and promoters.
+
+
+###### TENGO QUE USAR LOS ALINEAMIENTOS Aligned.sortedByCoord.out.bam
+
+
+
+
+#me voy a dcdata2/nuevo
+
+#luego a R
+
+
+#   voy a usar el vector bamT  y    fcT  que ya estan guardado en R   en  dcdata2/nuevo
+
+
+###########                     usar fcT
+
+
+
+
+options(digits=20)
+fcT$stat
+
+nrow(fcT$counts)
+#98246
+
+
+
+###########################################   edgeR y limma  
+
+
+
+#Create a DGEList object
+
+
+library(limma)
+library(edgeR)
+
+
+xT <- DGEList(counts=fcT$counts, genes=fcT$annotation[,c("GeneID","Length")])
+
+###  mirar la tabla
+
+
+head(xT)
+
+class(xT)
+
+
+dim(xT)
+#[1] 98246     7          #son 7 muestras en total
+
+
+
+
+#Filtering. Only keep in the analysis those genes which had >10 reads per million mapped reads in at least two libraries.
+
+isexpr <- rowSums(cpm(xT) > 10) >= 2
+
+summary(isexpr)
+#   Mode   FALSE    TRUE 
+logical   78445   19801
+
+
+#### sobreescribo xT, ahora estara filtrado
+
+xT <- xT[isexpr,]
+
+
+dim(xT)
+#[1]  19801     7
+
+
+
+
+
+
+#########################################  RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR (a partir de pag 4)
+
+
+#Organising sample information
+
+#eliminar "Aligned.sortedByCoord.out.bam" de los nombres de las muestras
+
+samplenames <- gsub( "Aligned.sortedByCoord.out.bam", "", colnames(xT))
+samplenames
+#[1] "B5T-1_S26"  "B5T-B_S48"  "B5T-C_S13"  "B5T_S47"    "CRT-1_S29" 
+[6] "CRT-B1_S18" "CRT-B_S17"
+
+#le asigno el nombre nuevo a colnames(xT)
+colnames(xT) <- samplenames
+
+
+
+
+#   voy a leer la tabla targetT
+
+#primero la pego con nano y despues la copio en R
+
+targetT <- read.delim(file= "targetT", header=TRUE, sep="")
+
+
+
+########  ahora a      xT$samples   le tengo que agregar la columna  genotype que esta en targetT
+
+
+## entonces     primero creo el objeto
+
+genotype <- as.factor(targetT$genotype)
+
+
+# ahora lo agrego a xT$samples
+
+
+xT$samples$genotype<-genotype
+
+###  entonces aca me lo muestra
+xT$samples
+
+
+
+############    Data pre-processing
+#               Transformations from the raw-scale
+
+
+#Here raw counts are converted to CPM and log-CPM values using the cpm function in edgeR
+
+#creo los objetos cpm (cuentas por millon) y lcpm (el log en base 2 de cuentas por millon)
+
+cpmT <- cpm(xT)
+lcpmT <- cpm(xT, log=TRUE)
+
+
+#cpm divide x$counts/lib.size y eso lo multiplica por 1 millon
+
+#cpm, log true    calcula el log en base 2 de cpm 
+
+
+summary(lcpmT)
+
+
+
+
+
+#               Normalising gene expression distributions
+
+
+
+#normalisation by the method of trimmed mean of M-values (TMM)12 is performed using the calc-NormFactors function in edgeR.
+#When working with DGEList-objects, these normalisation factors are automatically stored in xT$samples$norm.factors.
+
+#[[1] 1 1 1 1 1 1 1
+
+
+
+xT <- calcNormFactors(xT, method = "TMM")
+xT$samples$norm.factors
+#[1] 1.09219585415066999801 0.95877349684211321534 1.05723700234800976894
+[4] 1.08894718861081507555 0.95177670197790953388 0.89523265940671536978
+[7] 0.97349403780372512074
+
+
+
+
+
+#                               Unsupervised clustering of samples
+
+#multi-dimensional scaling (MDS) plot shows similarities and dissimilarities between samples in an
+#unsupervised manner so that one can have an idea of the extent to which differential expression can be detected
+#before carrying out formal tests.
+
+
+library(RColorBrewer)
+
+
+#tampoco lo voy a hacer
+
+
+######### EMPIEZA Differential expression analysis
+
+
+#### usar esta matriz
+
+
+designT <- model.matrix(~0+genotype)
+designT
+# genotypeB5 genotypeCR
+1          1          0
+2          1          0
+3          1          0
+4          1          0
+5          0          1
+6          0          1
+7          0          1
+attr(,"assign")
+[1] 1 1
+attr(,"contrasts")
+attr(,"contrasts")$genotype
+[1] "contr.treatment"
+
+
+
+
+#Contrasts for pairwise comparisons between cell populations are set up in limma using the makeContrasts function.
+
+contrT <- makeContrasts(genotypeB5-genotypeCR, levels=designT)
+contrT
+#           Contrasts
+Levels       genotypeB5 - genotypeCR
+  genotypeB5                       1
+  genotypeCR                      -1
+
+
+
+
+#        Removing heteroscedascity from count data
+
+
+#  voom function  
+
+#Transform count data to log2-counts per million (logCPM), estimate
+     the mean-variance relationship and use this to compute appropriate
+     observation-level weights. The data are then ready for linear
+     modelling.
+
+
+
+vT <- voom(xT, designT, plot=FALSE)
+
+#              Fitting linear models for comparisons of interest
+
+
+vTfit <- lmFit(vT, designT)
+
+
+vTfit <- contrasts.fit(vTfit, contrasts=contrT)
+eTfit <- eBayes(vTfit)
+
+#                            Examining the number of DE genes
+
+summary(decideTests(eTfit))
+#       genotypeB5 - genotypeCR
+Down                      3708
+NotSig                   13270
+Up                        2823
+
+
+
+
+
+
+
+#########################################################################################################################
+
+
+
+
+resT <- topTable(eTfit, number = 15000, lfc = 1, p.value = 0.05)
+nrow(resT)
+#[1] 3284 y aca si el p value ajustado me da hasta 0.049
+
+write.table(x=resT, file="resT", col.names=TRUE)
+
+wc -l resT
+#3285
+
+
+
+awk '{if ($4 >= 0) pos++; else neg++} END {print "Positivos:", pos; print "Negativos:", neg}' resT
+Positivos: 1325
+Negativos: 1960 #1959
+
+
+
+
+
+
+
