@@ -1,0 +1,120 @@
+
+####################             DE-B5
+
+
+#### B5 - 2 (40 d) vs 4 (Flowering)
+
+#   voy a usar el vector    bamB5  que ya esta guardado en R   en /dcdata2/nuevo
+
+
+
+#### usar esta matriz
+
+designtB5 <- model.matrix(~0+treatmentB5)
+
+designtB5
+
+   treatmentB51 treatmentB52 treatmentB53 treatmentB54 treatmentB5T
+1             1            0            0            0            0
+2             1            0            0            0            0
+3             1            0            0            0            0
+4             1            0            0            0            0
+5             0            1            0            0            0
+6             0            1            0            0            0
+7             0            1            0            0            0
+8             0            0            1            0            0
+9             0            0            1            0            0
+10            0            0            1            0            0
+11            0            0            1            0            0
+12            0            0            0            1            0
+13            0            0            0            1            0
+14            0            0            0            0            1
+15            0            0            0            0            1
+16            0            0            0            0            1
+17            0            0            0            0            1
+attr(,"assign")
+[1] 1 1 1 1 1
+attr(,"contrasts")
+attr(,"contrasts")$treatmentB5
+[1] "contr.treatment"
+
+
+
+contrtB524 <- makeContrasts(treatmentB52-treatmentB54, levels=designtB5)
+contrtB524
+              Contrasts
+Levels         treatmentB52 - treatmentB54
+  treatmentB51                           0
+  treatmentB52                           1
+  treatmentB53                           0
+  treatmentB54                          -1
+  treatmentB5T                           0
+
+
+
+
+
+
+#        Removing heteroscedascity from count data
+
+
+#  voom function  
+
+#Transform count data to log2-counts per million (logCPM), estimate
+     the mean-variance relationship and use this to compute appropriate
+     observation-level weights. The data are then ready for linear
+     modelling.
+
+
+#vb5 <- voom(xb5, designtB5, plot=FALSE)   #este no lo debo correr en cada comparacion, es solo una vez
+
+#              Fitting linear models for comparisons of interest
+
+
+#vb5fit <- lmFit(vb5, designtB5)    #este no lo debo correr en cada comparacion, es solo una vez
+
+vb524fit <- contrasts.fit(vb5fit, contrasts=contrtB524)
+eb524fit <- eBayes(vb524fit)
+
+
+
+
+#                            Examining the number of DE genes
+
+summary(decideTests(eb524fit))
+#       treatmentB52 - treatmentB54
+Down                          7241
+NotSig                       12505
+Up                            6168
+
+
+
+
+##################   
+
+
+
+resB524 <- topTable(eb524fit, number = 15000, lfc = 1, p.value = 0.05)
+nrow(resB524)
+#[1] 6480 y aca si el p value ajustado me da hasta 0.049
+
+write.table(x=resB524, file="resB524", col.names=TRUE)
+
+wc -l resB524
+#6481
+
+
+
+awk '{if ($4 >= 0) pos++; else neg++} END {print "Positivos:", pos; print "Negativos:", neg}' resB524
+Positivos: 3582
+Negativos: 2899 #2898
+
+
+
+
+
+
+
+
+
+
